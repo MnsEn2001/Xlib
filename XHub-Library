@@ -325,8 +325,8 @@ end
 function Xlib:MakeSlider(config)
     -- สร้าง Slider Frame
     local Slider = Instance.new("Frame")
-    Slider.Size = UDim2.new(1, -20, 0, 30)
-    Slider.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Slider.Size = UDim2.new(1, -20, 0, 50)
+    Slider.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 60)
     Slider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Slider.Parent = config.Parent.ToggleContainer
 
@@ -336,7 +336,7 @@ function Xlib:MakeSlider(config)
 
     -- สร้าง Label
     local SliderLabel = Instance.new("TextLabel")
-    SliderLabel.Size = UDim2.new(1, -40, 1, 0)
+    SliderLabel.Size = UDim2.new(1, -40, 0.5, 0)
     SliderLabel.Position = UDim2.new(0, 10, 0, 0)
     SliderLabel.Text = config.Name
     SliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -349,7 +349,7 @@ function Xlib:MakeSlider(config)
     -- สร้าง Slider Bar
     local SliderBar = Instance.new("Frame")
     SliderBar.Size = UDim2.new(1, -40, 0, 5)
-    SliderBar.Position = UDim2.new(0, 10, 1, -15)
+    SliderBar.Position = UDim2.new(0, 10, 1, -20)
     SliderBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     SliderBar.Parent = Slider
 
@@ -360,6 +360,17 @@ function Xlib:MakeSlider(config)
     SliderButton.Text = ""
     SliderButton.Parent = SliderBar
 
+    -- สร้างค่า Slider Value
+    local SliderValue = Instance.new("TextLabel")
+    SliderValue.Size = UDim2.new(0, 50, 0, 20)
+    SliderValue.Position = UDim2.new(0.5, -25, -0.5, -25)
+    SliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SliderValue.BackgroundTransparency = 1
+    SliderValue.Font = Enum.Font.Gotham
+    SliderValue.TextSize = 14
+    SliderValue.Text = tostring(config.Default)
+    SliderValue.Parent = SliderButton
+
     local MinValue = config.MinValue or 0
     local MaxValue = config.MaxValue or 100
     local Default = config.Default or MinValue
@@ -369,6 +380,7 @@ function Xlib:MakeSlider(config)
         value = math.clamp(value, MinValue, MaxValue)
         local percent = (value - MinValue) / (MaxValue - MinValue)
         SliderButton.Position = UDim2.new(percent, -10, 0.5, -10)
+        SliderValue.Text = tostring(value)
         if config.Callback then
             config.Callback(value)
         end
@@ -448,8 +460,8 @@ function Xlib:MakeTextBox(config)
     local TextBox = Instance.new("TextBox")
     TextBox.Size = UDim2.new(1, -20, 0, 30)
     TextBox.Position = UDim2.new(0, 10, 0, 25)
-    TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TextBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)  -- สีพื้นหลังจางลง
+    TextBox.TextColor3 = Color3.fromRGB(50, 50, 50)           -- สีตัวอักษรจางลง
     TextBox.Font = Enum.Font.Gotham
     TextBox.TextSize = 14
     TextBox.ClearTextOnFocus = false
@@ -473,7 +485,7 @@ function Xlib:MakeLabel(config)
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(1, -20, 0, 30)
     Label.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
-    Label.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Label.BackgroundTransparency = 1  -- ทำให้พื้นหลังโปร่งใส
     Label.Text = config.Text or "Label"
     Label.TextColor3 = Color3.fromRGB(255, 255, 255)
     Label.Font = Enum.Font.Gotham
@@ -482,13 +494,8 @@ function Xlib:MakeLabel(config)
     Label.TextYAlignment = Enum.TextYAlignment.Center
     Label.Parent = config.Parent.ToggleContainer
 
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Label
-
     return Label
 end
-
 
 function Xlib:MakeNotification(config)
     -- สร้าง Notification Frame
