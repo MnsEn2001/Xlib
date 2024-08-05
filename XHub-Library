@@ -141,46 +141,6 @@ function Xlib:MakeWindow(config)
     }
 end
 
--- Function to create tabs
-function Xlib:MakeTab(config)
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1, 0, 0, 30)
-    TabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    TabButton.Text = config.Name
-    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TabButton.Font = Enum.Font.Gotham
-    TabButton.TextSize = 14
-    TabButton.Parent = config.Parent.TabFrame
-
-    local UIListLayout = config.Parent.TabFrame:FindFirstChildOfClass("UIListLayout")
-    if not UIListLayout then
-        UIListLayout = Instance.new("UIListLayout")
-        UIListLayout.Parent = config.Parent.TabFrame
-    end
-
-    local ToggleContainer = Instance.new("Frame")
-    ToggleContainer.Size = UDim2.new(1, 0, 1, 0)
-    ToggleContainer.BackgroundTransparency = 1
-    ToggleContainer.Parent = config.Parent.ContentFrame
-    ToggleContainer.Visible = false
-
-    TabButton.MouseButton1Click:Connect(function()
-        for _, child in pairs(config.Parent.ContentFrame:GetChildren()) do
-            if child:IsA("Frame") then
-                child.Visible = false
-            end
-        end
-        ToggleContainer.Visible = true
-
-        -- Reset the UIListLayout to update with new children
-        UIListLayout:Apply(config.Parent.ContentFrame:GetChildren())
-    end)
-
-    return {
-        ToggleContainer = ToggleContainer
-    }
-end
-
 -- Function to create buttons
 function Xlib:MakeButton(config)
     local Button = Instance.new("TextButton")
