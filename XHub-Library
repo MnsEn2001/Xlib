@@ -383,6 +383,18 @@ function Xlib:MakeLabel(config)
     Label.TextYAlignment = Enum.TextYAlignment.Center
     Label.Parent = config.Parent.ToggleContainer
 
+    -- เพิ่ม UIStroke เพื่อให้มีขอบรอบ Label
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Thickness = 1
+    UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    UIStroke.Parent = Label
+
+    -- เพิ่ม UIPadding เพื่อเพิ่มระยะห่างภายใน Label
+    local UIPadding = Instance.new("UIPadding")
+    UIPadding.PaddingLeft = UDim.new(0, 5)
+    UIPadding.PaddingRight = UDim.new(0, 5)
+    UIPadding.Parent = Label
+
     return Label
 end
 
