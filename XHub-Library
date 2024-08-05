@@ -1,4 +1,5 @@
 local Xlib = {}
+
 function Xlib:MakeWindow(config)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "Xlib_Gui"
@@ -203,7 +204,6 @@ function Xlib:MakeButton(config)
     end)
 end
 
--- Function to create toggles
 function Xlib:MakeToggle(config)
     local Toggle = Instance.new("Frame")
     Toggle.Size = UDim2.new(1, -20, 0, 30)
@@ -255,215 +255,174 @@ function Xlib:MakeDropdown(config)
     Dropdown.Size = UDim2.new(1, -20, 0, 30)
     Dropdown.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
     Dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Dropdown.ZIndex = 1
     Dropdown.Parent = config.Parent.ToggleContainer
 
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 5)
     UICorner.Parent = Dropdown
 
-    local DropdownLabel = Instance.new("TextLabel")
-    DropdownLabel.Size = UDim2.new(1, -40, 1, 0)
-    DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
-    DropdownLabel.Text = config.Name
-    DropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    DropdownLabel.BackgroundTransparency = 1
-    DropdownLabel.Font = Enum.Font.Gotham
-    DropdownLabel.TextSize = 14
-    DropdownLabel.ZIndex = 1
-    DropdownLabel.Parent = Dropdown
-
     local DropdownButton = Instance.new("TextButton")
-    DropdownButton.Size = UDim2.new(0, 20, 0, 20)
-    DropdownButton.Position = UDim2.new(1, -30, 0.5, -10)
-    DropdownButton.Text = "v"
+    DropdownButton.Size = UDim2.new(1, -20, 1, 0)
+    DropdownButton.Position = UDim2.new(0, 10, 0, 0)
+    DropdownButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    DropdownButton.Text = config.Name
     DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    DropdownButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    DropdownButton.ZIndex = 1
+    DropdownButton.Font = Enum.Font.Gotham
+    DropdownButton.TextSize = 14
     DropdownButton.Parent = Dropdown
 
-    local OptionsFrame = Instance.new("ScrollingFrame")
-    OptionsFrame.Size = UDim2.new(1, 0, 0, math.min(#config.Options * 30, 150)) -- Limit height to 150 pixels
-    OptionsFrame.Position = UDim2.new(0, 0, 1, 0)
-    OptionsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    OptionsFrame.Visible = false
-    OptionsFrame.ZIndex = 2
-    OptionsFrame.CanvasSize = UDim2.new(0, 0, 0, #config.Options * 30)
-    OptionsFrame.ScrollBarThickness = 5
-    OptionsFrame.Parent = Dropdown
+    local DropdownList = Instance.new("Frame")
+    DropdownList.Size = UDim2.new(1, 0, 0, 0)
+    DropdownList.Position = UDim2.new(0, 0, 1, 0)
+    DropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    DropdownList.ClipsDescendants = true
+    DropdownList.Parent = Dropdown
 
-    local function toggleOptions()
-        OptionsFrame.Visible = not OptionsFrame.Visible
-    end
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = DropdownList
 
-    DropdownButton.MouseButton1Click:Connect(toggleOptions)
+    local expanded = false
 
-    for i, option in ipairs(config.Options) do
-        local OptionButton = Instance.new("TextButton")
-        OptionButton.Size = UDim2.new(1, -20, 0, 30)
-        OptionButton.Position = UDim2.new(0, 10, 0, (i - 1) * 30)
-        OptionButton.Text = option
-        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        OptionButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        OptionButton.ZIndex = 2
-        OptionButton.Parent = OptionsFrame
-
-        OptionButton.MouseButton1Click:Connect(function()
-            DropdownLabel.Text = option
-            config.Callback(option)
-            OptionsFrame.Visible = false
-        end)
-    end
-
-    return {
-        Dropdown = Dropdown,
-        DropdownButton = DropdownButton,
-        OptionsFrame = OptionsFrame
-    }
-end
-
-function Xlib:MakeTextBox(config)
-    -- สร้าง TextBox Frame
-    local TextBoxFrame = Instance.new("Frame")
-    TextBoxFrame.Size = UDim2.new(1, -20, 0, 50)
-    TextBoxFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 60)
-    TextBoxFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    TextBoxFrame.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = TextBoxFrame
-
-    -- สร้าง Label
-    local TextBoxLabel = Instance.new("TextLabel")
-    TextBoxLabel.Size = UDim2.new(1, -40, 0, 20)
-    TextBoxLabel.Position = UDim2.new(0, 10, 0, 5)
-    TextBoxLabel.Text = config.Name
-    TextBoxLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextBoxLabel.BackgroundTransparency = 1
-    TextBoxLabel.Font = Enum.Font.Gotham
-    TextBoxLabel.TextSize = 14
-    TextBoxLabel.Parent = TextBoxFrame
-
-    -- สร้าง TextBox
-    local TextBox = Instance.new("TextBox")
-    TextBox.Size = UDim2.new(1, -20, 0, 30)
-    TextBox.Position = UDim2.new(0, 10, 0, 25)
-    TextBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)  -- สีพื้นหลังจางลง
-    TextBox.TextColor3 = Color3.fromRGB(50, 50, 50)           -- สีตัวอักษรจางลง
-    TextBox.Font = Enum.Font.Gotham
-    TextBox.TextSize = 14
-    TextBox.ClearTextOnFocus = false
-    TextBox.Text = config.Default or ""
-    TextBox.Parent = TextBoxFrame
-
-    -- ตั้งค่าฟังก์ชัน Callback
-    TextBox.FocusLost:Connect(function(enterPressed)
-        if enterPressed and config.Callback then
-            config.Callback(TextBox.Text)
+    DropdownButton.MouseButton1Click:Connect(function()
+        expanded = not expanded
+        if expanded then
+            DropdownList.Size = UDim2.new(1, 0, 0, #config.Options * 30)
+        else
+            DropdownList.Size = UDim2.new(1, 0, 0, 0)
         end
     end)
 
-    return {
-        TextBoxFrame = TextBoxFrame,
-        TextBox = TextBox
-    }
+    for _, option in ipairs(config.Options) do
+        local OptionButton = Instance.new("TextButton")
+        OptionButton.Size = UDim2.new(1, -20, 0, 30)
+        OptionButton.Position = UDim2.new(0, 10, 0, (#DropdownList:GetChildren() - 1) * 30)
+        OptionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        OptionButton.Text = option
+        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        OptionButton.Font = Enum.Font.Gotham
+        OptionButton.TextSize = 14
+        OptionButton.Parent = DropdownList
+
+        OptionButton.MouseButton1Click:Connect(function()
+            DropdownButton.Text = option
+            if config.Callback then
+                config.Callback(option)
+            end
+            expanded = false
+            DropdownList.Size = UDim2.new(1, 0, 0, 0)
+        end)
+    end
 end
 
-function Xlib:MakeLabel(config)
+function Xlib:MakeTextBox(config)
+    local TextBox = Instance.new("Frame")
+    TextBox.Size = UDim2.new(1, -20, 0, 40)
+    TextBox.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TextBox.Parent = config.Parent.ToggleContainer
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = TextBox
+
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -20, 0, 30)
-    Label.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
-    Label.BackgroundTransparency = 1  -- ทำให้พื้นหลังโปร่งใส
-    Label.Text = config.Text or "Label"
+    Label.Size = UDim2.new(1, -20, 0, 20)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Label.Text = config.Label
     Label.TextColor3 = Color3.fromRGB(255, 255, 255)
     Label.Font = Enum.Font.Gotham
     Label.TextSize = 14
+    Label.Parent = TextBox
+
+    local InputBox = Instance.new("TextBox")
+    InputBox.Size = UDim2.new(1, -20, 0, 20)
+    InputBox.Position = UDim2.new(0, 10, 0, 25)
+    InputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    InputBox.Font = Enum.Font.Gotham
+    InputBox.TextSize = 14
+    InputBox.ClearTextOnFocus = false
+    InputBox.Parent = TextBox
+
+    InputBox.FocusLost:Connect(function()
+        if config.Callback then
+            config.Callback(InputBox.Text)
+        end
+    end)
+end
+
+function Xlib:MakeLabel(config)
+    -- Create the label frame
+    local LabelFrame = Instance.new("Frame")
+    LabelFrame.Size = UDim2.new(1, -20, 0, 40)
+    LabelFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    LabelFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    LabelFrame.Parent = config.Parent.ToggleContainer
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = LabelFrame
+
+    -- Create the text label
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1, -20, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.Font = Enum.Font.Gotham
+    Label.TextSize = 14
+    Label.Text = config.Text or "Label Text"
+    Label.TextWrapped = true
     Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.TextYAlignment = Enum.TextYAlignment.Center
-    Label.Parent = config.Parent.ToggleContainer
-
-    -- เพิ่ม UIStroke เพื่อให้มีขอบรอบ Label
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.Thickness = 1
-    UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    UIStroke.Parent = Label
-
-    -- เพิ่ม UIPadding เพื่อเพิ่มระยะห่างภายใน Label
-    local UIPadding = Instance.new("UIPadding")
-    UIPadding.PaddingLeft = UDim.new(0, 5)
-    UIPadding.PaddingRight = UDim.new(0, 5)
-    UIPadding.Parent = Label
-
-    return Label
+    Label.Parent = LabelFrame
 end
 
 function Xlib:MakeNotification(config)
-    -- สร้าง Notification Frame
-    local notificationFrame = Instance.new("Frame")
-    notificationFrame.Size = UDim2.new(0.3, 0, 0.1, 0)
-    notificationFrame.Position = UDim2.new(0.35, 0, 0.05, 0) -- Adjust position as needed
-    notificationFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    notificationFrame.BackgroundTransparency = 0.5
-    notificationFrame.BorderSizePixel = 0
-    notificationFrame.Parent = config.Parent
+    local Notification = Instance.new("Frame")
+    Notification.Size = UDim2.new(0, 300, 0, 60)
+    Notification.Position = UDim2.new(1, -320, 0, 20)
+    Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Notification.BackgroundTransparency = 0.8
+    Notification.BorderSizePixel = 0
+    Notification.Parent = game.Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui")
 
-    -- Create UICorner for rounded corners
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = notificationFrame
+    UICorner.Parent = Notification
 
-    -- Create title label
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, 0, 0, 30)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = config.Title or "Title"
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 18
-    titleLabel.Parent = notificationFrame
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -20, 0, 20)
+    Title.Position = UDim2.new(0, 10, 0, 5)
+    Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Title.Text = config.Title or "Notification"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.Font = Enum.Font.GothamBold
+    Title.TextSize = 16
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = Notification
 
-    -- Create message label
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, 0, 0, 60)
-    messageLabel.Position = UDim2.new(0, 0, 0, 30)
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = config.Message or "Message"
-    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    messageLabel.Font = Enum.Font.Gotham
-    messageLabel.TextSize = 14
-    messageLabel.TextWrapped = true
-    messageLabel.Parent = notificationFrame
+    local Message = Instance.new("TextLabel")
+    Message.Size = UDim2.new(1, -20, 0, 30)
+    Message.Position = UDim2.new(0, 10, 0, 25)
+    Message.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Message.Text = config.Message or "This is a notification message."
+    Message.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Message.Font = Enum.Font.Gotham
+    Message.TextSize = 14
+    Message.TextWrapped = true
+    Message.TextXAlignment = Enum.TextXAlignment.Left
+    Message.Parent = Notification
 
-    -- ฟังก์ชันสำหรับการจางหายไป
-    local function fadeOut()
-        for i = 0, 1, 0.1 do
-            notificationFrame.BackgroundTransparency = 0.5 + i * 0.5
-            titleLabel.TextTransparency = i
-            messageLabel.TextTransparency = i
-            wait(0.1)
-        end
-        notificationFrame:Destroy()
+    -- Fade out and remove after duration
+    if config.Duration then
+        task.delay(config.Duration, function()
+            Notification:TweenTransparency(0, Enum.EasingDirection.In, Enum.EasingStyle.Quad, 1, true)
+            task.delay(1, function()
+                Notification:Destroy()
+            end)
+        end)
     end
-
-    -- ซ่อนการแจ้งเตือนหลังจากระยะเวลาที่กำหนด
-    delay(config.Duration or 3, fadeOut)
-
-    -- ฟังก์ชันสำหรับการแสดงการแจ้งเตือน
-    local function showNotification()
-        notificationFrame.Visible = true
-        fadeOut()
-    end
-
-    -- แสดงการแจ้งเตือนเมื่อสร้างถ้าตั้งค่าไว้
-    if config.ShowOnCreate then
-        showNotification()
-    end
-
-    return {
-        NotificationFrame = notificationFrame,
-        Show = showNotification,
-    }
 end
 
 return Xlib
