@@ -138,6 +138,59 @@ function Xlib:MakeWindow(config)
     }
 end
 
+function Xlib:MakeTab(config)
+    -- Create the main tab frame
+    local Tab = Instance.new("Frame")
+    Tab.Size = UDim2.new(1, -20, 0, 40)
+    Tab.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
+    Tab.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Tab.Parent = config.Parent.ToggleContainer
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Tab
+
+    -- Create the tab button
+    local TabButton = Instance.new("TextButton")
+    TabButton.Size = UDim2.new(1, -20, 1, 0)
+    TabButton.Position = UDim2.new(0, 10, 0, 0)
+    TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    TabButton.Text = config.Name
+    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TabButton.Font = Enum.Font.Gotham
+    TabButton.TextSize = 14
+    TabButton.Parent = Tab
+
+    local ContentFrame = Instance.new("Frame")
+    ContentFrame.Size = UDim2.new(1, 0, 0, 0)
+    ContentFrame.Position = UDim2.new(0, 0, 1, 0)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    ContentFrame.BorderSizePixel = 0
+    ContentFrame.Visible = false
+    ContentFrame.Parent = Tab
+
+    -- Create a UIListLayout for content
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = ContentFrame
+
+    -- Handle tab switching
+    local function showTab()
+        for _, child in ipairs(config.Parent:GetChildren()) do
+            if child:IsA("Frame") and child ~= Tab then
+                child.ContentFrame.Visible = false
+            end
+        end
+        ContentFrame.Visible = true
+    end
+
+    TabButton.MouseButton1Click:Connect(showTab)
+
+    return {
+        TabButton = TabButton,
+        ContentFrame = ContentFrame,
+    }
+end
+
 function Xlib:MakeButton(config)
     local Button = Instance.new("TextButton")
     Button.Size = UDim2.new(1, -30, 0, 35) -- ขนาดใหม่
