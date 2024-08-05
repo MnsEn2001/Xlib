@@ -343,9 +343,10 @@ function Xlib:MakeSlider(config)
     SliderLabel.BackgroundTransparency = 1
     SliderLabel.Font = Enum.Font.Gotham
     SliderLabel.TextSize = 14
+    SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
     SliderLabel.Parent = Slider
 
-    -- สร้าง Slider
+    -- สร้าง Slider Bar
     local SliderBar = Instance.new("Frame")
     SliderBar.Size = UDim2.new(1, -40, 0, 5)
     SliderBar.Position = UDim2.new(0, 10, 1, -15)
@@ -380,7 +381,7 @@ function Xlib:MakeSlider(config)
 
     local function update(input)
         local delta = input.Position - dragStart
-        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset)
         local percent = (newPos.X.Offset - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X
         updateSlider(MinValue + percent * (MaxValue - MinValue))
     end
@@ -416,7 +417,7 @@ function Xlib:MakeSlider(config)
 
     return {
         Slider = Slider,
-        SliderButton = Slider
+        SliderButton = SliderButton
     }
 end
 
