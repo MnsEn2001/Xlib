@@ -1,10 +1,13 @@
 local Xlib = {}
 
+-- แก้ไขฟังก์ชัน Xlib:Create
 function Xlib:Create(name, nameUnder)
+    -- สร้าง ScreenGui หลัก
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = name .. "_Gui"
     ScreenGui.Parent = game:GetService("CoreGui")
 
+    -- สร้าง MainFrame
     local MainFrame = Instance.new("Frame")
     MainFrame.Size = UDim2.new(0, 400, 0, 350)
     MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
@@ -18,12 +21,14 @@ function Xlib:Create(name, nameUnder)
     UICorner.CornerRadius = UDim.new(0, 10)
     UICorner.Parent = MainFrame
 
+    -- สร้าง TitleBar
     local TitleBar = Instance.new("Frame")
     TitleBar.Size = UDim2.new(1, 0, 0, 30)
     TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
 
+    -- สร้าง TitleLabel
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -60, 1, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 0)
@@ -34,6 +39,7 @@ function Xlib:Create(name, nameUnder)
     TitleLabel.TextSize = 18
     TitleLabel.Parent = TitleBar
 
+    -- สร้าง SubTitleLabel
     local SubTitleLabel = Instance.new("TextLabel")
     SubTitleLabel.Size = UDim2.new(1, -60, 1, 0)
     SubTitleLabel.Position = UDim2.new(0, 10, 0, 25)
@@ -44,6 +50,7 @@ function Xlib:Create(name, nameUnder)
     SubTitleLabel.TextSize = 14
     SubTitleLabel.Parent = TitleBar
 
+    -- สร้าง MinimizeButton
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
     MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
@@ -52,6 +59,7 @@ function Xlib:Create(name, nameUnder)
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
+    -- สร้าง CloseButton
     local CloseButton = Instance.new("TextButton")
     CloseButton.Size = UDim2.new(0, 20, 0, 20)
     CloseButton.Position = UDim2.new(1, -30, 0, 5)
@@ -60,33 +68,33 @@ function Xlib:Create(name, nameUnder)
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
-    local TabFrame = Instance.new("ScrollingFrame")
+    -- สร้าง TabFrame
+    local TabFrame = Instance.new("Frame")
     TabFrame.Size = UDim2.new(0, 100, 1, -30)
     TabFrame.Position = UDim2.new(0, 0, 0, 30)
     TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabFrame.BorderSizePixel = 0
-    TabFrame.ScrollBarThickness = 5
     TabFrame.Parent = MainFrame
 
-    local ContentFrame = Instance.new("ScrollingFrame")
+    -- สร้าง ContentFrame
+    local ContentFrame = Instance.new("Frame")
     ContentFrame.Size = UDim2.new(1, -100, 1, -30)
     ContentFrame.Position = UDim2.new(0, 100, 0, 30)
     ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     ContentFrame.BorderSizePixel = 0
-    ContentFrame.ScrollBarThickness = 5
     ContentFrame.Parent = MainFrame
 
-    -- Create minimized icon
+    -- สร้าง MinimizedIcon
     local MinimizedIcon = Instance.new("TextButton")
     MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
-    MinimizedIcon.Text = "> XHub <"
+    MinimizedIcon.Text = "> " .. name .. " <"
     MinimizedIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizedIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MinimizedIcon.Visible = false
     MinimizedIcon.Parent = ScreenGui
 
-    -- Minimize and restore functions
+    -- ฟังก์ชันสำหรับการย่อและเรียกคืนหน้าต่าง
     local function minimizeWindow()
         MainFrame.Visible = false
         MinimizedIcon.Visible = true
@@ -105,7 +113,7 @@ function Xlib:Create(name, nameUnder)
     MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
     CloseButton.MouseButton1Click:Connect(closeWindow)
 
-    -- Make minimized icon draggable
+    -- ทำให้ MinimizedIcon สามารถลากได้
     local dragging
     local dragInput
     local dragStart
@@ -149,8 +157,15 @@ function Xlib:Create(name, nameUnder)
     }
 end
 
+-- ฟังก์ชัน Xlib:MakeWindow
+function Xlib:MakeWindow(options)
+    assert(options.Name, "Name is required")
+    local nameUnder = options.SubTitle or ""
+    return self:Create(options.Name, nameUnder)
+end
+
 -- แก้ไขฟังก์ชัน Xlib:Tab
-function Xlib:Tab(name, parent, tabButtonName)
+function Xlib:Tab(name, parent, buttonName)
     local tabFrame = Instance.new("Frame")
     tabFrame.Name = name
     tabFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -160,14 +175,14 @@ function Xlib:Tab(name, parent, tabButtonName)
     tabFrame.Parent = parent
 
     local tabButton = Instance.new("TextButton")
-    tabButton.Name = tabButtonName
+    tabButton.Name = buttonName
     tabButton.Size = UDim2.new(1, 0, 0, 50)
     tabButton.Text = name
     tabButton.Parent = parent
 
     tabButton.MouseButton1Click:Connect(function()
         for _, child in pairs(parent:GetChildren()) do
-            if child:IsA("Frame") then
+            if child:IsA("Frame") and child ~= tabFrame then
                 child.Visible = false
             end
         end
@@ -177,7 +192,15 @@ function Xlib:Tab(name, parent, tabButtonName)
     return tabFrame
 end
 
--- แก้ไขฟังก์ชัน Xlib:Button
+-- เพิ่มฟังก์ชัน Xlib:MakeTab
+function Xlib:MakeTab(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    assert(options.ButtonName, "ButtonName is required")
+    return self:Tab(options.Name, options.Parent, options.ButtonName)
+end
+
+-- ฟังก์ชันสร้างปุ่ม
 function Xlib:Button(name, parent, callback)
     local button = Instance.new("TextButton")
     button.Name = name
@@ -194,25 +217,35 @@ function Xlib:Button(name, parent, callback)
     return button
 end
 
--- แก้ไขฟังก์ชัน Xlib:Toggle
-function Xlib:Toggle(name, parent, callback)
+-- เพิ่มฟังก์ชัน Xlib:MakeButton
+function Xlib:MakeButton(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    return self:Button(options.Name, options.Parent, options.Callback)
+end
+
+
+-- ฟังก์ชัน Toggle
+function Xlib:Toggle(name, parent, default, callback)
     local toggleFrame = Instance.new("Frame")
     toggleFrame.Name = name
     toggleFrame.Size = UDim2.new(1, 0, 0, 50)
-    toggleFrame.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    toggleFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
     toggleFrame.Parent = parent
 
     local toggleButton = Instance.new("TextButton")
     toggleButton.Name = "ToggleButton"
     toggleButton.Size = UDim2.new(0.5, 0, 1, 0)
-    toggleButton.Text = "OFF"
+    toggleButton.Text = default and "ON" or "OFF"
+    toggleButton.BackgroundColor3 = default and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
     toggleButton.Parent = toggleFrame
 
-    local toggleValue = false
+    local toggleValue = default
 
     toggleButton.MouseButton1Click:Connect(function()
         toggleValue = not toggleValue
         toggleButton.Text = toggleValue and "ON" or "OFF"
+        toggleButton.BackgroundColor3 = toggleValue and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
         if callback then
             callback(toggleValue)
         end
@@ -221,215 +254,251 @@ function Xlib:Toggle(name, parent, callback)
     return toggleFrame
 end
 
--- ฟังก์ชัน Xlib:Dropdown
+-- เพิ่มฟังก์ชัน Xlib:MakeToggle
+function Xlib:MakeToggle(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    return self:Toggle(options.Name, options.Parent, options.Default or false, options.Callback)
+end
+
+-- แก้ไขฟังก์ชัน Xlib:Dropdown
 function Xlib:Dropdown(name, parent, options, callback)
+    -- สร้างเฟรมหลักสำหรับ dropdown
     local dropdownFrame = Instance.new("Frame")
     dropdownFrame.Name = name
-    dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
+    dropdownFrame.Size = UDim2.new(0, 200, 0, 50)
     dropdownFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
     dropdownFrame.Parent = parent
-
+    
+    -- สร้างปุ่มหลักของ dropdown
     local dropdownButton = Instance.new("TextButton")
     dropdownButton.Name = "DropdownButton"
-    dropdownButton.Size = UDim2.new(1, 0, 0, 50)
-    dropdownButton.Text = name
+    dropdownButton.Size = UDim2.new(1, 0, 1, 0)
+    dropdownButton.Text = "Select an Option"
+    dropdownButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
     dropdownButton.Parent = dropdownFrame
-
-    local dropdownList = Instance.new("Frame")
-    dropdownList.Name = "DropdownList"
-    dropdownList.Size = UDim2.new(1, 0, 0, 0)
-    dropdownList.Position = UDim2.new(0, 0, 1, 0)
-    dropdownList.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    dropdownList.Visible = false
-    dropdownList.Parent = dropdownFrame
-
-    -- Populate dropdown list with options
-    local function createOption(optionText)
+    
+    -- สร้างเฟรมสำหรับรายการที่แสดงเมื่อคลิก dropdown
+    local optionsFrame = Instance.new("Frame")
+    optionsFrame.Name = "OptionsFrame"
+    optionsFrame.Size = UDim2.new(1, 0, 0, #options * 30)
+    optionsFrame.Position = UDim2.new(0, 0, 1, 0)
+    optionsFrame.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    optionsFrame.Visible = false
+    optionsFrame.Parent = dropdownFrame
+    
+    -- สร้างรายการภายใน dropdown
+    for i, option in ipairs(options) do
         local optionButton = Instance.new("TextButton")
+        optionButton.Name = "Option" .. i
         optionButton.Size = UDim2.new(1, 0, 0, 30)
-        optionButton.Text = optionText
-        optionButton.Parent = dropdownList
-
+        optionButton.Position = UDim2.new(0, 0, (i - 1) * 30, 0)
+        optionButton.Text = option
+        optionButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+        optionButton.Parent = optionsFrame
+        
+        -- การคลิกแต่ละตัวเลือก
         optionButton.MouseButton1Click:Connect(function()
-            dropdownButton.Text = optionText
-            dropdownList.Visible = false
+            dropdownButton.Text = option
+            optionsFrame.Visible = false
             if callback then
-                callback(optionText)
+                callback(option)
             end
         end)
     end
-
-    for _, option in ipairs(options) do
-        createOption(option)
-    end
-
-    local isDropdownOpen = false
-
+    
+    -- การคลิกปุ่มหลักเพื่อแสดง/ซ่อนรายการ
     dropdownButton.MouseButton1Click:Connect(function()
-        isDropdownOpen = not isDropdownOpen
-        dropdownList.Visible = isDropdownOpen
+        optionsFrame.Visible = not optionsFrame.Visible
     end)
-
-    -- Close dropdown list if clicked outside
-    local function closeDropdown()
-        isDropdownOpen = false
-        dropdownList.Visible = false
-    end
-
-    local userInputService = game:GetService("UserInputService")
-
-    userInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and dropdownList.Visible then
-            local mouseLocation = input.Position
-            if not dropdownFrame.AbsolutePosition:In(mouseLocation) then
-                closeDropdown()
+    
+    -- คลิกนอก dropdown เพื่อซ่อนรายการ
+    local function onInputBegan(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if not dropdownFrame:IsPointInRegion(input.Position) then
+                optionsFrame.Visible = false
             end
         end
-    end)
+    end
+    
+    game:GetService("UserInputService").InputBegan:Connect(onInputBegan)
 
     return dropdownFrame
 end
 
+-- เพิ่มฟังก์ชัน Xlib:MakeDropdown
+function Xlib:MakeDropdown(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    assert(options.Options, "Options are required")
+    return self:Dropdown(options.Name, options.Parent, options.Options, options.Callback)
+end
+
 -- แก้ไขฟังก์ชัน Xlib:Slider
-function Xlib:Slider(name, parent, min, max, default, callback)
+function Xlib:Slider(name, parent, minValue, maxValue, initialValue, callback)
+    -- สร้างเฟรมหลักสำหรับ slider
     local sliderFrame = Instance.new("Frame")
     sliderFrame.Name = name
-    sliderFrame.Size = UDim2.new(1, 0, 0, 50)
-    sliderFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
+    sliderFrame.Size = UDim2.new(0, 300, 0, 50)
+    sliderFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     sliderFrame.Parent = parent
 
-    local sliderBar = Instance.new("Frame")
-    sliderBar.Name = "SliderBar"
-    sliderBar.Size = UDim2.new(1, 0, 0, 10)
-    sliderBar.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    sliderBar.Position = UDim2.new(0, 0, 0.5, -5)
-    sliderBar.Parent = sliderFrame
+    -- สร้างป้ายชื่อสำหรับ slider
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -50, 0, 30)
+    label.Position = UDim2.new(0, 10, 0, 10)
+    label.Text = name .. ": " .. tostring(initialValue)
+    label.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    label.Parent = sliderFrame
 
-    local sliderKnob = Instance.new("Frame")
-    sliderKnob.Name = "SliderKnob"
-    sliderKnob.Size = UDim2.new(0, 20, 1, 0)
-    sliderKnob.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    sliderKnob.Position = UDim2.new(0, default, 0, 0)
-    sliderKnob.Parent = sliderBar
+    -- สร้างเฟรมสำหรับ slider track
+    local trackFrame = Instance.new("Frame")
+    trackFrame.Size = UDim2.new(1, -20, 0, 10)
+    trackFrame.Position = UDim2.new(0, 10, 0, 40)
+    trackFrame.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+    trackFrame.Parent = sliderFrame
 
+    -- สร้างปุ่มสำหรับ slider
+    local sliderButton = Instance.new("TextButton")
+    sliderButton.Size = UDim2.new(0, 20, 1, -10)
+    sliderButton.Position = UDim2.new(0, 0, 0, 0)
+    sliderButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    sliderButton.Parent = trackFrame
+
+    -- คำนวณขนาดและตำแหน่งเริ่มต้น
+    local sliderWidth = trackFrame.AbsoluteSize.X
+    local sliderRange = maxValue - minValue
+    local initialPos = (initialValue - minValue) / sliderRange * sliderWidth
+
+    sliderButton.Position = UDim2.new(0, initialPos, 0, 0)
+    label.Text = name .. ": " .. tostring(initialValue)
+
+    -- การลากปุ่ม slider
     local dragging = false
-    local function updateValue()
-        local sliderWidth = sliderBar.AbsoluteSize.X
-        local knobPosition = sliderKnob.Position.X.Offset
-        local value = (knobPosition / sliderWidth) * (max - min) + min
-        if callback then
-            callback(value)
-        end
-    end
 
-    sliderKnob.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
+    sliderButton.MouseButton1Down:Connect(function()
+        dragging = true
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local mousePos = input.Position.X
+            local trackPos = trackFrame.AbsolutePosition.X
+            local relativePos = mousePos - trackPos
+            local clampedPos = math.clamp(relativePos, 0, sliderWidth)
+            local value = minValue + (clampedPos / sliderWidth) * sliderRange
+
+            sliderButton.Position = UDim2.new(0, clampedPos, 0, 0)
+            label.Text = name .. ": " .. string.format("%.2f", value)
+
+            if callback then
+                callback(value)
+            end
         end
     end)
 
-    sliderKnob.InputEnded:Connect(function(input)
+    game:GetService("UserInputService").InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
-        end
-    end)
-
-    sliderFrame.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mouseX = input.Position.X
-            local knobX = math.clamp(mouseX - sliderBar.AbsolutePosition.X, 0, sliderBar.AbsoluteSize.X)
-            sliderKnob.Position = UDim2.new(0, knobX, 0, 0)
-            updateValue()
         end
     end)
 
     return sliderFrame
 end
 
--- ฟังก์ชัน Xlib:Keybind
-function Xlib:Keybind(name, parent, callback)
-    local keybindFrame = Instance.new("Frame")
-    keybindFrame.Name = name
-    keybindFrame.Size = UDim2.new(1, 0, 0, 50)
-    keybindFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-    keybindFrame.Parent = parent
-
-    local keybindButton = Instance.new("TextButton")
-    keybindButton.Name = "KeybindButton"
-    keybindButton.Size = UDim2.new(1, 0, 1, 0)
-    keybindButton.Text = "Press Key"
-    keybindButton.Parent = keybindFrame
-
-    local UserInputService = game:GetService("UserInputService")
-
-    local function onKeyPress(input)
-        if input.UserInputType == Enum.UserInputType.Keyboard then
-            local key = input.KeyCode.Name
-            keybindButton.Text = key
-            if callback then
-                callback(key)
-            end
-            UserInputService.InputBegan:Disconnect(onKeyPress)  -- Disconnect after key press
-        end
-    end
-
-    keybindButton.MouseButton1Click:Connect(function()
-        UserInputService.InputBegan:Connect(onKeyPress)
-    end)
-
-    return keybindFrame
+-- เพิ่มฟังก์ชัน Xlib:MakeSlider
+function Xlib:MakeSlider(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    assert(options.MinValue ~= nil, "MinValue is required")
+    assert(options.MaxValue ~= nil, "MaxValue is required")
+    assert(options.InitialValue ~= nil, "InitialValue is required")
+    return self:Slider(options.Name, options.Parent, options.MinValue, options.MaxValue, options.InitialValue, options.Callback)
 end
 
--- ฟังก์ชัน Xlib:TextBox
+-- แก้ไขฟังก์ชัน Xlib:TextBox
 function Xlib:TextBox(name, parent, placeholderText, callback)
+    -- สร้างกรอบสำหรับ TextBox
     local textBoxFrame = Instance.new("Frame")
     textBoxFrame.Name = name
     textBoxFrame.Size = UDim2.new(1, 0, 0, 50)
     textBoxFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
     textBoxFrame.Parent = parent
 
+    -- สร้าง TextBox
     local textBox = Instance.new("TextBox")
     textBox.Name = "TextBox"
     textBox.Size = UDim2.new(1, 0, 1, 0)
     textBox.PlaceholderText = placeholderText
     textBox.Text = ""
+    textBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     textBox.Parent = textBoxFrame
 
+    -- ฟังก์ชันที่เรียกใช้เมื่อข้อความใน TextBox เปลี่ยนแปลง
     local function onTextChanged()
         if callback then
             callback(textBox.Text)
         end
     end
 
-    textBox.Changed:Connect(function(property)
-        if property == "Text" then
-            onTextChanged()
-        end
-    end)
+    -- เชื่อมต่อการเปลี่ยนแปลงข้อความ
+    textBox:GetPropertyChangedSignal("Text"):Connect(onTextChanged)
 
     return textBoxFrame
 end
 
--- ฟังก์ชัน Xlib:Notification
-function Xlib:Notification(message, duration)
+-- เพิ่มฟังก์ชัน Xlib:MakeTextBox
+function Xlib:MakeTextBox(options)
+    assert(options.Name, "Name is required")
+    assert(options.Parent, "Parent is required")
+    assert(options.PlaceholderText, "PlaceholderText is required")
+    return self:TextBox(options.Name, options.Parent, options.PlaceholderText, options.Callback)
+end
+
+function Xlib:Notification(title, message, duration, parent)
+    -- Create the notification frame
     local notificationFrame = Instance.new("Frame")
-    notificationFrame.Size = UDim2.new(0.5, 0, 0.1, 0)
-    notificationFrame.Position = UDim2.new(0.25, 0, 0.9, 0)
-    notificationFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    notificationFrame.BackgroundTransparency = 0.5
+    notificationFrame.Size = UDim2.new(0.3, 0, 0.1, 0)
+    notificationFrame.Position = UDim2.new(0.35, 0, 0.05, 0) -- Adjust position as needed
+    notificationFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     notificationFrame.BorderSizePixel = 0
-    notificationFrame.Parent = game.Players.LocalPlayer.PlayerGui
+    notificationFrame.Parent = parent
 
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.Text = message
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.TextScaled = true
-    textLabel.BackgroundTransparency = 1
-    textLabel.Parent = notificationFrame
+    -- Create the title label
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Text = title
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 16
+    titleLabel.Parent = notificationFrame
 
-    wait(duration)
-    notificationFrame:Destroy()
+    -- Create the message label
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Size = UDim2.new(1, 0, 0.6, 0)
+    messageLabel.Position = UDim2.new(0, 0, 0.4, 0)
+    messageLabel.Text = message
+    messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.Font = Enum.Font.Gotham
+    messageLabel.TextSize = 14
+    messageLabel.TextWrapped = true
+    messageLabel.Parent = notificationFrame
+
+    delay(duration, function()
+        notificationFrame:Destroy()
+    end)
+end
+
+-- เพิ่มฟังก์ชัน Xlib:MakeNotification
+function Xlib:MakeNotification(options)
+    assert(options.Title, "Title is required")
+    assert(options.Message, "Message is required")
+    assert(options.Duration, "Duration is required")
+    assert(options.Parent, "Parent is required")
+    return self:Notification(options.Title, options.Message, options.Duration, options.Parent)
 end
 
 return Xlib
