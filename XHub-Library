@@ -221,6 +221,75 @@ function Xlib:Toggle(name, parent, callback)
     return toggleFrame
 end
 
+-- ฟังก์ชัน Xlib:Dropdown
+function Xlib:Dropdown(name, parent, options, callback)
+    local dropdownFrame = Instance.new("Frame")
+    dropdownFrame.Name = name
+    dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
+    dropdownFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
+    dropdownFrame.Parent = parent
+
+    local dropdownButton = Instance.new("TextButton")
+    dropdownButton.Name = "DropdownButton"
+    dropdownButton.Size = UDim2.new(1, 0, 0, 50)
+    dropdownButton.Text = name
+    dropdownButton.Parent = dropdownFrame
+
+    local dropdownList = Instance.new("Frame")
+    dropdownList.Name = "DropdownList"
+    dropdownList.Size = UDim2.new(1, 0, 0, 0)
+    dropdownList.Position = UDim2.new(0, 0, 1, 0)
+    dropdownList.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    dropdownList.Visible = false
+    dropdownList.Parent = dropdownFrame
+
+    -- Populate dropdown list with options
+    local function createOption(optionText)
+        local optionButton = Instance.new("TextButton")
+        optionButton.Size = UDim2.new(1, 0, 0, 30)
+        optionButton.Text = optionText
+        optionButton.Parent = dropdownList
+
+        optionButton.MouseButton1Click:Connect(function()
+            dropdownButton.Text = optionText
+            dropdownList.Visible = false
+            if callback then
+                callback(optionText)
+            end
+        end)
+    end
+
+    for _, option in ipairs(options) do
+        createOption(option)
+    end
+
+    local isDropdownOpen = false
+
+    dropdownButton.MouseButton1Click:Connect(function()
+        isDropdownOpen = not isDropdownOpen
+        dropdownList.Visible = isDropdownOpen
+    end)
+
+    -- Close dropdown list if clicked outside
+    local function closeDropdown()
+        isDropdownOpen = false
+        dropdownList.Visible = false
+    end
+
+    local userInputService = game:GetService("UserInputService")
+
+    userInputService.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and dropdownList.Visible then
+            local mouseLocation = input.Position
+            if not dropdownFrame.AbsolutePosition:In(mouseLocation) then
+                closeDropdown()
+            end
+        end
+    end)
+
+    return dropdownFrame
+end
+
 -- แก้ไขฟังก์ชัน Xlib:Slider
 function Xlib:Slider(name, parent, min, max, default, callback)
     local sliderFrame = Instance.new("Frame")
