@@ -322,117 +322,6 @@ function Xlib:MakeDropdown(config)
     }
 end
 
-function Xlib:MakeSlider(config)
-    -- สร้าง Slider Frame
-    local Slider = Instance.new("Frame")
-    Slider.Size = UDim2.new(1, -20, 0, 50)
-    Slider.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 60)
-    Slider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Slider.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Slider
-
-    -- สร้าง Label
-    local SliderLabel = Instance.new("TextLabel")
-    SliderLabel.Size = UDim2.new(1, -40, 0.5, 0)
-    SliderLabel.Position = UDim2.new(0, 10, 0, 0)
-    SliderLabel.Text = config.Name
-    SliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SliderLabel.BackgroundTransparency = 1
-    SliderLabel.Font = Enum.Font.Gotham
-    SliderLabel.TextSize = 14
-    SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-    SliderLabel.Parent = Slider
-
-    -- สร้าง Slider Bar
-    local SliderBar = Instance.new("Frame")
-    SliderBar.Size = UDim2.new(1, -40, 0, 5)
-    SliderBar.Position = UDim2.new(0, 10, 1, -20)
-    SliderBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    SliderBar.Parent = Slider
-
-    local SliderButton = Instance.new("TextButton")
-    SliderButton.Size = UDim2.new(0, 20, 0, 20)
-    SliderButton.Position = UDim2.new(0, 0, 0.5, -10)
-    SliderButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    SliderButton.Text = ""
-    SliderButton.Parent = SliderBar
-
-    -- สร้างค่า Slider Value
-    local SliderValue = Instance.new("TextLabel")
-    SliderValue.Size = UDim2.new(0, 50, 0, 20)
-    SliderValue.Position = UDim2.new(0.5, -25, -0.5, -25)
-    SliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SliderValue.BackgroundTransparency = 1
-    SliderValue.Font = Enum.Font.Gotham
-    SliderValue.TextSize = 14
-    SliderValue.Text = tostring(config.Default)
-    SliderValue.Parent = SliderButton
-
-    local MinValue = config.MinValue or 0
-    local MaxValue = config.MaxValue or 100
-    local Default = config.Default or MinValue
-    local currentValue = math.clamp(Default, MinValue, MaxValue)
-
-    local function updateSlider(value)
-        value = math.clamp(value, MinValue, MaxValue)
-        local percent = (value - MinValue) / (MaxValue - MinValue)
-        SliderButton.Position = UDim2.new(percent, -10, 0.5, -10)
-        SliderValue.Text = tostring(value)
-        if config.Callback then
-            config.Callback(value)
-        end
-    end
-
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-
-    local function update(input)
-        local delta = input.Position - dragStart
-        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset)
-        local percent = (newPos.X.Offset - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X
-        updateSlider(MinValue + percent * (MaxValue - MinValue))
-    end
-
-    SliderButton.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = SliderButton.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    SliderButton.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
-
-    -- ตั้งค่าเริ่มต้นของ Slider
-    updateSlider(currentValue)
-
-    return {
-        Slider = Slider,
-        SliderButton = SliderButton
-    }
-end
-
 function Xlib:MakeTextBox(config)
     -- สร้าง TextBox Frame
     local TextBoxFrame = Instance.new("Frame")
@@ -499,77 +388,68 @@ end
 
 function Xlib:MakeNotification(config)
     -- สร้าง Notification Frame
-    local NotificationFrame = Instance.new("Frame")
-    NotificationFrame.Size = UDim2.new(0, 300, 0, 100)
-    NotificationFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
-    NotificationFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    NotificationFrame.BorderSizePixel = 0
-    NotificationFrame.Visible = false
-    NotificationFrame.Parent = game:GetService("CoreGui")
+    local notificationFrame = Instance.new("Frame")
+    notificationFrame.Size = UDim2.new(0.3, 0, 0.1, 0)
+    notificationFrame.Position = UDim2.new(0.35, 0, 0.05, 0) -- Adjust position as needed
+    notificationFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    notificationFrame.BackgroundTransparency = 0.5
+    notificationFrame.BorderSizePixel = 0
+    notificationFrame.Parent = config.Parent
 
+    -- Create UICorner for rounded corners
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = NotificationFrame
+    UICorner.Parent = notificationFrame
 
-    -- สร้าง Title Label
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, 0, 0, 30)
-    TitleLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    TitleLabel.Text = config.Title or "Notification"
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextSize = 16
-    TitleLabel.Parent = NotificationFrame
+    -- Create title label
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0, 30)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = config.Title or "Title"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 18
+    titleLabel.Parent = notificationFrame
 
-    -- สร้าง Message Label
-    local MessageLabel = Instance.new("TextLabel")
-    MessageLabel.Size = UDim2.new(1, -20, 1, -40)
-    MessageLabel.Position = UDim2.new(0, 10, 0, 30)
-    MessageLabel.Text = config.Message or "This is a notification."
-    MessageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    MessageLabel.BackgroundTransparency = 1
-    MessageLabel.Font = Enum.Font.Gotham
-    MessageLabel.TextSize = 14
-    MessageLabel.TextWrapped = true
-    MessageLabel.Parent = NotificationFrame
+    -- Create message label
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Size = UDim2.new(1, 0, 0, 60)
+    messageLabel.Position = UDim2.new(0, 0, 0, 30)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.Text = config.Message or "Message"
+    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    messageLabel.Font = Enum.Font.Gotham
+    messageLabel.TextSize = 14
+    messageLabel.TextWrapped = true
+    messageLabel.Parent = notificationFrame
 
-    -- สร้าง Close Button
-    local CloseButton = Instance.new("TextButton")
-    CloseButton.Size = UDim2.new(0, 30, 0, 30)
-    CloseButton.Position = UDim2.new(1, -40, 0, 5)
-    CloseButton.Text = "X"
-    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    CloseButton.Parent = NotificationFrame
-
+    -- ฟังก์ชันสำหรับการจางหายไป
     local function fadeOut()
-        for i = 1, 10 do
-            NotificationFrame.BackgroundTransparency = i / 10
-            TitleLabel.TextTransparency = i / 10
-            MessageLabel.TextTransparency = i / 10
-            wait(0.3)
+        for i = 0, 1, 0.1 do
+            notificationFrame.BackgroundTransparency = 0.5 + i * 0.5
+            titleLabel.TextTransparency = i
+            messageLabel.TextTransparency = i
+            wait(0.1)
         end
-        NotificationFrame:Destroy()
+        notificationFrame:Destroy()
     end
 
+    -- ซ่อนการแจ้งเตือนหลังจากระยะเวลาที่กำหนด
+    delay(config.Duration or 3, fadeOut)
+
+    -- ฟังก์ชันสำหรับการแสดงการแจ้งเตือน
     local function showNotification()
-        NotificationFrame.Visible = true
-        if config.Duration then
-            wait(config.Duration)
-            fadeOut()
-        end
+        notificationFrame.Visible = true
+        fadeOut()
     end
 
-    CloseButton.MouseButton1Click:Connect(function()
-        fadeOut()
-    end)
-
+    -- แสดงการแจ้งเตือนเมื่อสร้างถ้าตั้งค่าไว้
     if config.ShowOnCreate then
         showNotification()
     end
 
     return {
-        NotificationFrame = NotificationFrame,
+        NotificationFrame = notificationFrame,
         Show = showNotification,
     }
 end
