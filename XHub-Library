@@ -2,15 +2,15 @@ local Xlib = {}
 
 -- แก้ไขฟังก์ชัน Xlib:Create
 function Xlib:Create(name, nameUnder)
-    -- Create Main ScreenGui
+    -- สร้าง ScreenGui หลัก
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = name .. "_Gui"
+    ScreenGui.Name = "Xlib"
     ScreenGui.Parent = game:GetService("CoreGui")
 
-    -- Create Main Frame
+    -- สร้าง MainFrame
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 600, 0, 400) -- Adjusted size for better layout
-    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200) -- Centered
+    MainFrame.Size = UDim2.new(0, 400, 0, 350)
+    MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 0
     MainFrame.Active = true
@@ -21,14 +21,14 @@ function Xlib:Create(name, nameUnder)
     UICorner.CornerRadius = UDim.new(0, 10)
     UICorner.Parent = MainFrame
 
-    -- Create Title Bar
+    -- สร้าง TitleBar
     local TitleBar = Instance.new("Frame")
     TitleBar.Size = UDim2.new(1, 0, 0, 30)
     TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
 
-    -- Create Title Label
+    -- สร้าง TitleLabel
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -60, 1, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 0)
@@ -39,7 +39,18 @@ function Xlib:Create(name, nameUnder)
     TitleLabel.TextSize = 18
     TitleLabel.Parent = TitleBar
 
-    -- Create Minimize Button
+    -- สร้าง SubTitleLabel
+    local SubTitleLabel = Instance.new("TextLabel")
+    SubTitleLabel.Size = UDim2.new(1, -60, 1, 0)
+    SubTitleLabel.Position = UDim2.new(0, 10, 0, 25)
+    SubTitleLabel.Text = nameUnder
+    SubTitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    SubTitleLabel.BackgroundTransparency = 1
+    SubTitleLabel.Font = Enum.Font.Gotham
+    SubTitleLabel.TextSize = 14
+    SubTitleLabel.Parent = TitleBar
+
+    -- สร้าง MinimizeButton
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
     MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
@@ -48,7 +59,7 @@ function Xlib:Create(name, nameUnder)
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
-    -- Create Close Button
+    -- สร้าง CloseButton
     local CloseButton = Instance.new("TextButton")
     CloseButton.Size = UDim2.new(0, 20, 0, 20)
     CloseButton.Position = UDim2.new(1, -30, 0, 5)
@@ -57,23 +68,23 @@ function Xlib:Create(name, nameUnder)
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
-    -- Create Sidebar for Tabs
-    local Sidebar = Instance.new("Frame")
-    Sidebar.Size = UDim2.new(0, 150, 1, -30)
-    Sidebar.Position = UDim2.new(0, 0, 0, 30)
-    Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    Sidebar.BorderSizePixel = 0
-    Sidebar.Parent = MainFrame
+    -- สร้าง TabFrame
+    local TabFrame = Instance.new("Frame")
+    TabFrame.Size = UDim2.new(0, 100, 1, -30)
+    TabFrame.Position = UDim2.new(0, 0, 0, 30)
+    TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    TabFrame.BorderSizePixel = 0
+    TabFrame.Parent = MainFrame
 
-    -- Create Content Frame
+    -- สร้าง ContentFrame
     local ContentFrame = Instance.new("Frame")
-    ContentFrame.Size = UDim2.new(1, -150, 1, -30)
-    ContentFrame.Position = UDim2.new(0, 150, 0, 30)
+    ContentFrame.Size = UDim2.new(1, -100, 1, -30)
+    ContentFrame.Position = UDim2.new(0, 100, 0, 30)
     ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     ContentFrame.BorderSizePixel = 0
     ContentFrame.Parent = MainFrame
 
-    -- Create Minimized Icon
+    -- สร้าง MinimizedIcon
     local MinimizedIcon = Instance.new("TextButton")
     MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
@@ -83,7 +94,7 @@ function Xlib:Create(name, nameUnder)
     MinimizedIcon.Visible = false
     MinimizedIcon.Parent = ScreenGui
 
-    -- Function to minimize and restore window
+    -- ฟังก์ชันสำหรับการย่อและเรียกคืนหน้าต่าง
     local function minimizeWindow()
         MainFrame.Visible = false
         MinimizedIcon.Visible = true
@@ -102,7 +113,7 @@ function Xlib:Create(name, nameUnder)
     MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
     CloseButton.MouseButton1Click:Connect(closeWindow)
 
-    -- Make Minimized Icon draggable
+    -- ทำให้ MinimizedIcon สามารถลากได้
     local dragging
     local dragInput
     local dragStart
@@ -141,7 +152,7 @@ function Xlib:Create(name, nameUnder)
 
     return {
         MainFrame = MainFrame,
-        Sidebar = Sidebar,
+        TabFrame = TabFrame,
         ContentFrame = ContentFrame,
     }
 end
