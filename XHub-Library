@@ -6,8 +6,8 @@ function Xlib:MakeWindow(config)
     ScreenGui.Parent = game:GetService("CoreGui")
 
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 400, 0, 350)
-    MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
+    MainFrame.Size = UDim2.new(0, 600, 0, 375) -- ขนาดใหม่ที่สอดคล้องกับหลักทองคำ
+    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -187.5)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 0
     MainFrame.Active = true
@@ -15,60 +15,59 @@ function Xlib:MakeWindow(config)
     MainFrame.Parent = ScreenGui
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.CornerRadius = UDim.new(0, 15) -- ขนาดมุมที่ใหญ่ขึ้นเล็กน้อย
     UICorner.Parent = MainFrame
 
     local TitleBar = Instance.new("Frame")
-    TitleBar.Size = UDim2.new(1, 0, 0, 30)
+    TitleBar.Size = UDim2.new(1, 0, 0, 40)
     TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
 
     local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -60, 1, 0)
+    TitleLabel.Size = UDim2.new(1, -80, 1, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 0)
     TitleLabel.Text = config.Name or "Xlib UI"
     TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextSize = 18
+    TitleLabel.TextSize = 20
     TitleLabel.Parent = TitleBar
 
     local MinimizeButton = Instance.new("TextButton")
-    MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
-    MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
+    MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
+    MinimizeButton.Position = UDim2.new(1, -65, 0.5, -12.5)
     MinimizeButton.Text = "<"
     MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
     local CloseButton = Instance.new("TextButton")
-    CloseButton.Size = UDim2.new(0, 20, 0, 20)
-    CloseButton.Position = UDim2.new(1, -30, 0, 5)
+    CloseButton.Size = UDim2.new(0, 25, 0, 25)
+    CloseButton.Position = UDim2.new(1, -35, 0.5, -12.5)
     CloseButton.Text = "X"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
     local TabFrame = Instance.new("ScrollingFrame")
-    TabFrame.Size = UDim2.new(0, 100, 1, -30)
-    TabFrame.Position = UDim2.new(0, 0, 0, 30)
+    TabFrame.Size = UDim2.new(0, 150, 1, -40)
+    TabFrame.Position = UDim2.new(0, 0, 0, 40)
     TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabFrame.BorderSizePixel = 0
     TabFrame.ScrollBarThickness = 5
     TabFrame.Parent = MainFrame
 
     local ContentFrame = Instance.new("ScrollingFrame")
-    ContentFrame.Size = UDim2.new(1, -100, 1, -30)
-    ContentFrame.Position = UDim2.new(0, 100, 0, 30)
+    ContentFrame.Size = UDim2.new(1, -150, 1, -40)
+    ContentFrame.Position = UDim2.new(0, 150, 0, 40)
     ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     ContentFrame.BorderSizePixel = 0
     ContentFrame.ScrollBarThickness = 5
     ContentFrame.Parent = MainFrame
 
-    -- Create minimized icon
     local MinimizedIcon = Instance.new("TextButton")
-    MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
+    MinimizedIcon.Size = UDim2.new(0, 75, 0, 40)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
     MinimizedIcon.Text = "> XHub <"
     MinimizedIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -78,7 +77,6 @@ function Xlib:MakeWindow(config)
     MinimizedIcon.Draggable = true
     MinimizedIcon.Parent = ScreenGui
 
-    -- Minimize and restore functions
     local function minimizeWindow()
         MainFrame.Visible = false
         MinimizedIcon.Visible = true
@@ -97,7 +95,6 @@ function Xlib:MakeWindow(config)
     MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
     CloseButton.MouseButton1Click:Connect(closeWindow)
 
-    -- Make minimized icon draggable
     local dragging
     local dragInput
     local dragStart
@@ -141,20 +138,19 @@ function Xlib:MakeWindow(config)
     }
 end
 
--- Function to create buttons
 function Xlib:MakeButton(config)
     local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(1, -20, 0, 30)
-    Button.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Button.Size = UDim2.new(1, -30, 0, 35) -- ขนาดใหม่
+    Button.Position = UDim2.new(0, 15, 0, (#config.Parent.ToggleContainer:GetChildren()) * 45)
     Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Button.Text = config.Name
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.Font = Enum.Font.Gotham
-    Button.TextSize = 14
+    Button.TextSize = 15
     Button.Parent = config.Parent.ToggleContainer
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.CornerRadius = UDim.new(0, 10) -- ขนาดมุมที่ใหญ่ขึ้น
     UICorner.Parent = Button
 
     Button.MouseButton1Click:Connect(function()
@@ -166,8 +162,8 @@ end
 
 function Xlib:MakeToggle(config)
     local Toggle = Instance.new("Frame")
-    Toggle.Size = UDim2.new(1, -20, 0, 30)
-    Toggle.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Toggle.Size = UDim2.new(1, -20, 0, 40)
+    Toggle.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
     Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Toggle.Parent = config.Parent.ToggleContainer
 
@@ -176,14 +172,14 @@ function Xlib:MakeToggle(config)
     UICorner.Parent = Toggle
 
     local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Size = UDim2.new(0, 20, 0, 20)
-    ToggleButton.Position = UDim2.new(1, -30, 0.5, -10)
+    ToggleButton.Size = UDim2.new(0, 30, 0, 20)
+    ToggleButton.Position = UDim2.new(1, -40, 0.5, -10)
     ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     ToggleButton.Text = ""
     ToggleButton.Parent = Toggle
 
     local ToggleLabel = Instance.new("TextLabel")
-    ToggleLabel.Size = UDim2.new(1, -40, 1, 0)
+    ToggleLabel.Size = UDim2.new(1, -50, 1, 0)
     ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
     ToggleLabel.BackgroundTransparency = 1
     ToggleLabel.Text = config.Name
@@ -192,28 +188,21 @@ function Xlib:MakeToggle(config)
     ToggleLabel.TextSize = 14
     ToggleLabel.Parent = Toggle
 
-    local toggled = false
+    local toggled = config.Default or false
 
     ToggleButton.MouseButton1Click:Connect(function()
         toggled = not toggled
-        if toggled then
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            if config.Callback then
-                config.Callback(true)
-            end
-        else
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-            if config.Callback then
-                config.Callback(false)
-            end
+        ToggleButton.BackgroundColor3 = toggled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+        if config.Callback then
+            config.Callback(toggled)
         end
     end)
 end
 
 function Xlib:MakeDropdown(config)
     local Dropdown = Instance.new("Frame")
-    Dropdown.Size = UDim2.new(1, -20, 0, 30)
-    Dropdown.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Dropdown.Size = UDim2.new(1, -20, 0, 40)
+    Dropdown.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
     Dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Dropdown.Parent = config.Parent.ToggleContainer
 
@@ -245,17 +234,13 @@ function Xlib:MakeDropdown(config)
 
     DropdownButton.MouseButton1Click:Connect(function()
         expanded = not expanded
-        if expanded then
-            DropdownList.Size = UDim2.new(1, 0, 0, #config.Options * 30)
-        else
-            DropdownList.Size = UDim2.new(1, 0, 0, 0)
-        end
+        DropdownList.Size = expanded and UDim2.new(1, 0, 0, #config.Options * 40) or UDim2.new(1, 0, 0, 0)
     end)
 
     for _, option in ipairs(config.Options) do
         local OptionButton = Instance.new("TextButton")
-        OptionButton.Size = UDim2.new(1, -20, 0, 30)
-        OptionButton.Position = UDim2.new(0, 10, 0, (#DropdownList:GetChildren() - 1) * 30)
+        OptionButton.Size = UDim2.new(1, -20, 0, 40)
+        OptionButton.Position = UDim2.new(0, 10, 0, (#DropdownList:GetChildren() - 1) * 40)
         OptionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         OptionButton.Text = option
         OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -276,8 +261,8 @@ end
 
 function Xlib:MakeTextBox(config)
     local TextBox = Instance.new("Frame")
-    TextBox.Size = UDim2.new(1, -20, 0, 40)
-    TextBox.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    TextBox.Size = UDim2.new(1, -20, 0, 50)
+    TextBox.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
     TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     TextBox.Parent = config.Parent.ToggleContainer
 
@@ -296,7 +281,7 @@ function Xlib:MakeTextBox(config)
     Label.Parent = TextBox
 
     local InputBox = Instance.new("TextBox")
-    InputBox.Size = UDim2.new(1, -20, 0, 20)
+    InputBox.Size = UDim2.new(1, -20, 0, 25)
     InputBox.Position = UDim2.new(0, 10, 0, 25)
     InputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -313,10 +298,9 @@ function Xlib:MakeTextBox(config)
 end
 
 function Xlib:MakeLabel(config)
-    -- Create the label frame
     local LabelFrame = Instance.new("Frame")
-    LabelFrame.Size = UDim2.new(1, -20, 0, 40)
-    LabelFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    LabelFrame.Size = UDim2.new(1, -20, 0, 50)
+    LabelFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
     LabelFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     LabelFrame.Parent = config.Parent.ToggleContainer
 
@@ -324,7 +308,6 @@ function Xlib:MakeLabel(config)
     UICorner.CornerRadius = UDim.new(0, 5)
     UICorner.Parent = LabelFrame
 
-    -- Create the text label
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(1, -20, 1, 0)
     Label.Position = UDim2.new(0, 10, 0, 0)
@@ -340,7 +323,7 @@ end
 
 function Xlib:MakeNotification(config)
     local Notification = Instance.new("Frame")
-    Notification.Size = UDim2.new(0, 300, 0, 60)
+    Notification.Size = UDim2.new(0, 300, 0, 80)
     Notification.Position = UDim2.new(1, -320, 0, 20)
     Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     Notification.BackgroundTransparency = 0.8
@@ -352,37 +335,28 @@ function Xlib:MakeNotification(config)
     UICorner.Parent = Notification
 
     local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(1, -20, 0, 20)
-    Title.Position = UDim2.new(0, 10, 0, 5)
-    Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Title.Text = config.Title or "Notification"
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.Position = UDim2.new(0, 0, 0, 0)
+    Title.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    Title.Text = config.Title or "Notification Title"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.Font = Enum.Font.GothamBold
-    Title.TextSize = 16
-    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.TextSize = 18
     Title.Parent = Notification
 
     local Message = Instance.new("TextLabel")
-    Message.Size = UDim2.new(1, -20, 0, 30)
-    Message.Position = UDim2.new(0, 10, 0, 25)
-    Message.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Message.Text = config.Message or "This is a notification message."
+    Message.Size = UDim2.new(1, -20, 0, 50)
+    Message.Position = UDim2.new(0, 10, 0, 30)
+    Message.BackgroundTransparency = 1
+    Message.Text = config.Message or "Notification Message"
     Message.TextColor3 = Color3.fromRGB(255, 255, 255)
     Message.Font = Enum.Font.Gotham
     Message.TextSize = 14
     Message.TextWrapped = true
-    Message.TextXAlignment = Enum.TextXAlignment.Left
     Message.Parent = Notification
 
-    -- Fade out and remove after duration
-    if config.Duration then
-        task.delay(config.Duration, function()
-            Notification:TweenTransparency(0, Enum.EasingDirection.In, Enum.EasingStyle.Quad, 1, true)
-            task.delay(1, function()
-                Notification:Destroy()
-            end)
-        end)
-    end
+    wait(config.Duration or 5)  -- ปิดการแจ้งเตือนหลังจากเวลาที่กำหนด
+    Notification:Destroy()
 end
 
 return Xlib
