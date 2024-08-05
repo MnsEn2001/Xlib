@@ -1,13 +1,9 @@
 local Xlib = {}
-
--- แก้ไขฟังก์ชัน Xlib:Create
-function Xlib:Create(name, nameUnder)
-    -- สร้าง ScreenGui หลัก
+function Xlib:MakeWindow(config)
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "Xlib"
+    ScreenGui.Name = "Xlib_Gui"
     ScreenGui.Parent = game:GetService("CoreGui")
 
-    -- สร้าง MainFrame
     local MainFrame = Instance.new("Frame")
     MainFrame.Size = UDim2.new(0, 400, 0, 350)
     MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
@@ -21,36 +17,22 @@ function Xlib:Create(name, nameUnder)
     UICorner.CornerRadius = UDim.new(0, 10)
     UICorner.Parent = MainFrame
 
-    -- สร้าง TitleBar
     local TitleBar = Instance.new("Frame")
     TitleBar.Size = UDim2.new(1, 0, 0, 30)
     TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
 
-    -- สร้าง TitleLabel
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -60, 1, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 0)
-    TitleLabel.Text = name
+    TitleLabel.Text = config.Name or "Xlib UI"
     TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Font = Enum.Font.GothamBold
     TitleLabel.TextSize = 18
     TitleLabel.Parent = TitleBar
 
-    -- สร้าง SubTitleLabel
-    local SubTitleLabel = Instance.new("TextLabel")
-    SubTitleLabel.Size = UDim2.new(1, -60, 1, 0)
-    SubTitleLabel.Position = UDim2.new(0, 10, 0, 25)
-    SubTitleLabel.Text = nameUnder
-    SubTitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    SubTitleLabel.BackgroundTransparency = 1
-    SubTitleLabel.Font = Enum.Font.Gotham
-    SubTitleLabel.TextSize = 14
-    SubTitleLabel.Parent = TitleBar
-
-    -- สร้าง MinimizeButton
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
     MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
@@ -59,7 +41,6 @@ function Xlib:Create(name, nameUnder)
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
-    -- สร้าง CloseButton
     local CloseButton = Instance.new("TextButton")
     CloseButton.Size = UDim2.new(0, 20, 0, 20)
     CloseButton.Position = UDim2.new(1, -30, 0, 5)
@@ -68,33 +49,35 @@ function Xlib:Create(name, nameUnder)
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
-    -- สร้าง TabFrame
-    local TabFrame = Instance.new("Frame")
+    local TabFrame = Instance.new("ScrollingFrame")
     TabFrame.Size = UDim2.new(0, 100, 1, -30)
     TabFrame.Position = UDim2.new(0, 0, 0, 30)
     TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabFrame.BorderSizePixel = 0
+    TabFrame.ScrollBarThickness = 5
     TabFrame.Parent = MainFrame
 
-    -- สร้าง ContentFrame
-    local ContentFrame = Instance.new("Frame")
+    local ContentFrame = Instance.new("ScrollingFrame")
     ContentFrame.Size = UDim2.new(1, -100, 1, -30)
     ContentFrame.Position = UDim2.new(0, 100, 0, 30)
     ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     ContentFrame.BorderSizePixel = 0
+    ContentFrame.ScrollBarThickness = 5
     ContentFrame.Parent = MainFrame
 
-    -- สร้าง MinimizedIcon
+    -- Create minimized icon
     local MinimizedIcon = Instance.new("TextButton")
     MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
-    MinimizedIcon.Text = "> " .. name .. " <"
+    MinimizedIcon.Text = "> XHub <"
     MinimizedIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizedIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MinimizedIcon.Visible = false
+    MinimizedIcon.Active = true
+    MinimizedIcon.Draggable = true
     MinimizedIcon.Parent = ScreenGui
 
-    -- ฟังก์ชันสำหรับการย่อและเรียกคืนหน้าต่าง
+    -- Minimize and restore functions
     local function minimizeWindow()
         MainFrame.Visible = false
         MinimizedIcon.Visible = true
@@ -113,7 +96,7 @@ function Xlib:Create(name, nameUnder)
     MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
     CloseButton.MouseButton1Click:Connect(closeWindow)
 
-    -- ทำให้ MinimizedIcon สามารถลากได้
+    -- Make minimized icon draggable
     local dragging
     local dragInput
     local dragStart
@@ -157,354 +140,409 @@ function Xlib:Create(name, nameUnder)
     }
 end
 
--- ฟังก์ชัน Xlib:MakeWindow
-function Xlib:MakeWindow(options)
-    assert(options.Name, "Name is required")
-    local nameUnder = options.SubTitle or ""
-    return self:Create(options.Name, nameUnder)
-end
+-- Function to create tabs
+function Xlib:MakeTab(config)
+    local TabButton = Instance.new("TextButton")
+    TabButton.Size = UDim2.new(1, 0, 0, 30)
+    TabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    TabButton.Text = config.Name
+    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TabButton.Font = Enum.Font.Gotham
+    TabButton.TextSize = 14
+    TabButton.Parent = config.Parent.TabFrame
 
--- แก้ไขฟังก์ชัน Xlib:Tab โดยไม่ใช้ ButtonName
-function Xlib:Tab(name, parent)
-    local tabFrame = Instance.new("Frame")
-    tabFrame.Name = name
-    tabFrame.Size = UDim2.new(1, 0, 1, 0)
-    tabFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    tabFrame.BackgroundTransparency = 1
-    tabFrame.Visible = false
-    tabFrame.Parent = parent
+    local UIListLayout = config.Parent.TabFrame:FindFirstChildOfClass("UIListLayout")
+    if not UIListLayout then
+        UIListLayout = Instance.new("UIListLayout")
+        UIListLayout.Parent = config.Parent.TabFrame
+    end
 
-    local tabButton = Instance.new("TextButton")
-    tabButton.Size = UDim2.new(1, 0, 0, 50)
-    tabButton.Text = name
-    tabButton.Parent = parent
+    local ToggleContainer = Instance.new("Frame")
+    ToggleContainer.Size = UDim2.new(1, 0, 1, 0)
+    ToggleContainer.BackgroundTransparency = 1
+    ToggleContainer.Parent = config.Parent.ContentFrame
+    ToggleContainer.Visible = false
 
-    tabButton.MouseButton1Click:Connect(function()
-        for _, child in pairs(parent:GetChildren()) do
-            if child:IsA("Frame") and child ~= tabFrame then
+    TabButton.MouseButton1Click:Connect(function()
+        for _, child in pairs(config.Parent.ContentFrame:GetChildren()) do
+            if child:IsA("Frame") then
                 child.Visible = false
             end
         end
-        tabFrame.Visible = true
+        ToggleContainer.Visible = true
+
+        -- Reset the UIListLayout to update with new children
+        UIListLayout:Apply(config.Parent.ContentFrame:GetChildren())
     end)
 
-    return tabFrame
+    return {
+        ToggleContainer = ToggleContainer
+    }
 end
 
--- เพิ่มฟังก์ชัน Xlib:MakeTab
-function Xlib:MakeTab(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    assert(options.ButtonName, "ButtonName is required")
-    return self:Tab(options.Name, options.Parent, options.ButtonName)
-end
+-- Function to create buttons
+function Xlib:MakeButton(config)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, -20, 0, 30)
+    Button.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.Text = config.Name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.Gotham
+    Button.TextSize = 14
+    Button.Parent = config.Parent.ToggleContainer
 
--- ฟังก์ชันสร้างปุ่ม
-function Xlib:Button(name, parent, callback)
-    local button = Instance.new("TextButton")
-    button.Name = name
-    button.Size = UDim2.new(1, 0, 0, 50)
-    button.Text = name
-    button.Parent = parent
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Button
 
-    button.MouseButton1Click:Connect(function()
-        if callback then
-            callback()
+    Button.MouseButton1Click:Connect(function()
+        if config.Callback then
+            config.Callback()
         end
     end)
-
-    return button
 end
 
--- เพิ่มฟังก์ชัน Xlib:MakeButton
-function Xlib:MakeButton(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    return self:Button(options.Name, options.Parent, options.Callback)
-end
+-- Function to create toggles
+function Xlib:MakeToggle(config)
+    local Toggle = Instance.new("Frame")
+    Toggle.Size = UDim2.new(1, -20, 0, 30)
+    Toggle.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Toggle.Parent = config.Parent.ToggleContainer
 
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Toggle
 
--- ฟังก์ชัน Toggle
-function Xlib:Toggle(name, parent, default, callback)
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Name = name
-    toggleFrame.Size = UDim2.new(1, 0, 0, 50)
-    toggleFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-    toggleFrame.Parent = parent
+    local ToggleButton = Instance.new("TextButton")
+    ToggleButton.Size = UDim2.new(0, 20, 0, 20)
+    ToggleButton.Position = UDim2.new(1, -30, 0.5, -10)
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    ToggleButton.Text = ""
+    ToggleButton.Parent = Toggle
 
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Size = UDim2.new(0.5, 0, 1, 0)
-    toggleButton.Text = default and "ON" or "OFF"
-    toggleButton.BackgroundColor3 = default and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-    toggleButton.Parent = toggleFrame
+    local ToggleLabel = Instance.new("TextLabel")
+    ToggleLabel.Size = UDim2.new(1, -40, 1, 0)
+    ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+    ToggleLabel.BackgroundTransparency = 1
+    ToggleLabel.Text = config.Name
+    ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleLabel.Font = Enum.Font.Gotham
+    ToggleLabel.TextSize = 14
+    ToggleLabel.Parent = Toggle
 
-    local toggleValue = default
+    local toggled = false
 
-    toggleButton.MouseButton1Click:Connect(function()
-        toggleValue = not toggleValue
-        toggleButton.Text = toggleValue and "ON" or "OFF"
-        toggleButton.BackgroundColor3 = toggleValue and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-        if callback then
-            callback(toggleValue)
-        end
-    end)
-
-    return toggleFrame
-end
-
--- เพิ่มฟังก์ชัน Xlib:MakeToggle
-function Xlib:MakeToggle(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    return self:Toggle(options.Name, options.Parent, options.Default or false, options.Callback)
-end
-
--- แก้ไขฟังก์ชัน Xlib:Dropdown
-function Xlib:Dropdown(name, parent, options, callback)
-    -- สร้างเฟรมหลักสำหรับ dropdown
-    local dropdownFrame = Instance.new("Frame")
-    dropdownFrame.Name = name
-    dropdownFrame.Size = UDim2.new(0, 200, 0, 50)
-    dropdownFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-    dropdownFrame.Parent = parent
-    
-    -- สร้างปุ่มหลักของ dropdown
-    local dropdownButton = Instance.new("TextButton")
-    dropdownButton.Name = "DropdownButton"
-    dropdownButton.Size = UDim2.new(1, 0, 1, 0)
-    dropdownButton.Text = "Select an Option"
-    dropdownButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    dropdownButton.Parent = dropdownFrame
-    
-    -- สร้างเฟรมสำหรับรายการที่แสดงเมื่อคลิก dropdown
-    local optionsFrame = Instance.new("Frame")
-    optionsFrame.Name = "OptionsFrame"
-    optionsFrame.Size = UDim2.new(1, 0, 0, #options * 30)
-    optionsFrame.Position = UDim2.new(0, 0, 1, 0)
-    optionsFrame.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    optionsFrame.Visible = false
-    optionsFrame.Parent = dropdownFrame
-    
-    -- สร้างรายการภายใน dropdown
-    for i, option in ipairs(options) do
-        local optionButton = Instance.new("TextButton")
-        optionButton.Name = "Option" .. i
-        optionButton.Size = UDim2.new(1, 0, 0, 30)
-        optionButton.Position = UDim2.new(0, 0, (i - 1) * 30, 0)
-        optionButton.Text = option
-        optionButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
-        optionButton.Parent = optionsFrame
-        
-        -- การคลิกแต่ละตัวเลือก
-        optionButton.MouseButton1Click:Connect(function()
-            dropdownButton.Text = option
-            optionsFrame.Visible = false
-            if callback then
-                callback(option)
+    ToggleButton.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        if toggled then
+            ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            if config.Callback then
+                config.Callback(true)
             end
+        else
+            ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            if config.Callback then
+                config.Callback(false)
+            end
+        end
+    end)
+end
+
+function Xlib:MakeDropdown(config)
+    local Dropdown = Instance.new("Frame")
+    Dropdown.Size = UDim2.new(1, -20, 0, 30)
+    Dropdown.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Dropdown.ZIndex = 1
+    Dropdown.Parent = config.Parent.ToggleContainer
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Dropdown
+
+    local DropdownLabel = Instance.new("TextLabel")
+    DropdownLabel.Size = UDim2.new(1, -40, 1, 0)
+    DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+    DropdownLabel.Text = config.Name
+    DropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownLabel.BackgroundTransparency = 1
+    DropdownLabel.Font = Enum.Font.Gotham
+    DropdownLabel.TextSize = 14
+    DropdownLabel.ZIndex = 1
+    DropdownLabel.Parent = Dropdown
+
+    local DropdownButton = Instance.new("TextButton")
+    DropdownButton.Size = UDim2.new(0, 20, 0, 20)
+    DropdownButton.Position = UDim2.new(1, -30, 0.5, -10)
+    DropdownButton.Text = "v"
+    DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    DropdownButton.ZIndex = 1
+    DropdownButton.Parent = Dropdown
+
+    local OptionsFrame = Instance.new("ScrollingFrame")
+    OptionsFrame.Size = UDim2.new(1, 0, 0, math.min(#config.Options * 30, 150)) -- Limit height to 150 pixels
+    OptionsFrame.Position = UDim2.new(0, 0, 1, 0)
+    OptionsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    OptionsFrame.Visible = false
+    OptionsFrame.ZIndex = 2
+    OptionsFrame.CanvasSize = UDim2.new(0, 0, 0, #config.Options * 30)
+    OptionsFrame.ScrollBarThickness = 5
+    OptionsFrame.Parent = Dropdown
+
+    local function toggleOptions()
+        OptionsFrame.Visible = not OptionsFrame.Visible
+    end
+
+    DropdownButton.MouseButton1Click:Connect(toggleOptions)
+
+    for i, option in ipairs(config.Options) do
+        local OptionButton = Instance.new("TextButton")
+        OptionButton.Size = UDim2.new(1, -20, 0, 30)
+        OptionButton.Position = UDim2.new(0, 10, 0, (i - 1) * 30)
+        OptionButton.Text = option
+        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        OptionButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        OptionButton.ZIndex = 2
+        OptionButton.Parent = OptionsFrame
+
+        OptionButton.MouseButton1Click:Connect(function()
+            DropdownLabel.Text = option
+            config.Callback(option)
+            OptionsFrame.Visible = false
         end)
     end
-    
-    -- การคลิกปุ่มหลักเพื่อแสดง/ซ่อนรายการ
-    dropdownButton.MouseButton1Click:Connect(function()
-        optionsFrame.Visible = not optionsFrame.Visible
-    end)
-    
-    -- คลิกนอก dropdown เพื่อซ่อนรายการ
-    local function onInputBegan(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if not dropdownFrame:IsPointInRegion(input.Position) then
-                optionsFrame.Visible = false
-            end
+
+    return {
+        Dropdown = Dropdown,
+        DropdownButton = DropdownButton,
+        OptionsFrame = OptionsFrame
+    }
+end
+
+function Xlib:MakeSlider(config)
+    -- สร้าง Slider Frame
+    local Slider = Instance.new("Frame")
+    Slider.Size = UDim2.new(1, -20, 0, 30)
+    Slider.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 40)
+    Slider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Slider.Parent = config.Parent.ToggleContainer
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Slider
+
+    -- สร้าง Label
+    local SliderLabel = Instance.new("TextLabel")
+    SliderLabel.Size = UDim2.new(1, -40, 1, 0)
+    SliderLabel.Position = UDim2.new(0, 10, 0, 0)
+    SliderLabel.Text = config.Name
+    SliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SliderLabel.BackgroundTransparency = 1
+    SliderLabel.Font = Enum.Font.Gotham
+    SliderLabel.TextSize = 14
+    SliderLabel.Parent = Slider
+
+    -- สร้าง Slider
+    local SliderBar = Instance.new("Frame")
+    SliderBar.Size = UDim2.new(1, -40, 0, 5)
+    SliderBar.Position = UDim2.new(0, 10, 1, -15)
+    SliderBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    SliderBar.Parent = Slider
+
+    local SliderButton = Instance.new("TextButton")
+    SliderButton.Size = UDim2.new(0, 20, 0, 20)
+    SliderButton.Position = UDim2.new(0, 0, 0.5, -10)
+    SliderButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    SliderButton.Text = ""
+    SliderButton.Parent = SliderBar
+
+    local MinValue = config.MinValue or 0
+    local MaxValue = config.MaxValue or 100
+    local Default = config.Default or MinValue
+    local currentValue = math.clamp(Default, MinValue, MaxValue)
+
+    local function updateSlider(value)
+        value = math.clamp(value, MinValue, MaxValue)
+        local percent = (value - MinValue) / (MaxValue - MinValue)
+        SliderButton.Position = UDim2.new(percent, -10, 0.5, -10)
+        if config.Callback then
+            config.Callback(value)
         end
     end
-    
-    game:GetService("UserInputService").InputBegan:Connect(onInputBegan)
 
-    return dropdownFrame
-end
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
 
--- เพิ่มฟังก์ชัน Xlib:MakeDropdown
-function Xlib:MakeDropdown(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    assert(options.Options, "Options are required")
-    return self:Dropdown(options.Name, options.Parent, options.Options, options.Callback)
-end
+    local function update(input)
+        local delta = input.Position - dragStart
+        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local percent = (newPos.X.Offset - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X
+        updateSlider(MinValue + percent * (MaxValue - MinValue))
+    end
 
--- แก้ไขฟังก์ชัน Xlib:Slider
-function Xlib:Slider(name, parent, minValue, maxValue, initialValue, callback)
-    -- สร้างเฟรมหลักสำหรับ slider
-    local sliderFrame = Instance.new("Frame")
-    sliderFrame.Name = name
-    sliderFrame.Size = UDim2.new(0, 300, 0, 50)
-    sliderFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    sliderFrame.Parent = parent
+    SliderButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = SliderButton.Position
 
-    -- สร้างป้ายชื่อสำหรับ slider
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -50, 0, 30)
-    label.Position = UDim2.new(0, 10, 0, 10)
-    label.Text = name .. ": " .. tostring(initialValue)
-    label.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    label.Parent = sliderFrame
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-    -- สร้างเฟรมสำหรับ slider track
-    local trackFrame = Instance.new("Frame")
-    trackFrame.Size = UDim2.new(1, -20, 0, 10)
-    trackFrame.Position = UDim2.new(0, 10, 0, 40)
-    trackFrame.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
-    trackFrame.Parent = sliderFrame
-
-    -- สร้างปุ่มสำหรับ slider
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Size = UDim2.new(0, 20, 1, -10)
-    sliderButton.Position = UDim2.new(0, 0, 0, 0)
-    sliderButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    sliderButton.Parent = trackFrame
-
-    -- คำนวณขนาดและตำแหน่งเริ่มต้น
-    local sliderWidth = trackFrame.AbsoluteSize.X
-    local sliderRange = maxValue - minValue
-    local initialPos = (initialValue - minValue) / sliderRange * sliderWidth
-
-    sliderButton.Position = UDim2.new(0, initialPos, 0, 0)
-    label.Text = name .. ": " .. tostring(initialValue)
-
-    -- การลากปุ่ม slider
-    local dragging = false
-
-    sliderButton.MouseButton1Down:Connect(function()
-        dragging = true
+    SliderButton.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
     end)
 
     game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mousePos = input.Position.X
-            local trackPos = trackFrame.AbsolutePosition.X
-            local relativePos = mousePos - trackPos
-            local clampedPos = math.clamp(relativePos, 0, sliderWidth)
-            local value = minValue + (clampedPos / sliderWidth) * sliderRange
-
-            sliderButton.Position = UDim2.new(0, clampedPos, 0, 0)
-            label.Text = name .. ": " .. string.format("%.2f", value)
-
-            if callback then
-                callback(value)
-            end
+        if input == dragInput and dragging then
+            update(input)
         end
     end)
 
-    game:GetService("UserInputService").InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
+    -- ตั้งค่าเริ่มต้นของ Slider
+    updateSlider(currentValue)
 
-    return sliderFrame
+    return {
+        Slider = Slider,
+        SliderButton = Slider
+    }
 end
 
--- เพิ่มฟังก์ชัน Xlib:MakeSlider
-function Xlib:MakeSlider(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    assert(options.MinValue ~= nil, "MinValue is required")
-    assert(options.MaxValue ~= nil, "MaxValue is required")
-    assert(options.InitialValue ~= nil, "InitialValue is required")
-    return self:Slider(options.Name, options.Parent, options.MinValue, options.MaxValue, options.InitialValue, options.Callback)
-end
+function Xlib:MakeTextBox(config)
+    -- สร้าง TextBox Frame
+    local TextBoxFrame = Instance.new("Frame")
+    TextBoxFrame.Size = UDim2.new(1, -20, 0, 50)
+    TextBoxFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 60)
+    TextBoxFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TextBoxFrame.Parent = config.Parent.ToggleContainer
 
--- แก้ไขฟังก์ชัน Xlib:TextBox
-function Xlib:TextBox(name, parent, placeholderText, callback)
-    -- สร้างกรอบสำหรับ TextBox
-    local textBoxFrame = Instance.new("Frame")
-    textBoxFrame.Name = name
-    textBoxFrame.Size = UDim2.new(1, 0, 0, 50)
-    textBoxFrame.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-    textBoxFrame.Parent = parent
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = TextBoxFrame
+
+    -- สร้าง Label
+    local TextBoxLabel = Instance.new("TextLabel")
+    TextBoxLabel.Size = UDim2.new(1, -40, 0, 20)
+    TextBoxLabel.Position = UDim2.new(0, 10, 0, 5)
+    TextBoxLabel.Text = config.Name
+    TextBoxLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextBoxLabel.BackgroundTransparency = 1
+    TextBoxLabel.Font = Enum.Font.Gotham
+    TextBoxLabel.TextSize = 14
+    TextBoxLabel.Parent = TextBoxFrame
 
     -- สร้าง TextBox
-    local textBox = Instance.new("TextBox")
-    textBox.Name = "TextBox"
-    textBox.Size = UDim2.new(1, 0, 1, 0)
-    textBox.PlaceholderText = placeholderText
-    textBox.Text = ""
-    textBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.Parent = textBoxFrame
+    local TextBox = Instance.new("TextBox")
+    TextBox.Size = UDim2.new(1, -20, 0, 30)
+    TextBox.Position = UDim2.new(0, 10, 0, 25)
+    TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TextBox.Font = Enum.Font.Gotham
+    TextBox.TextSize = 14
+    TextBox.ClearTextOnFocus = false
+    TextBox.Text = config.Default or ""
+    TextBox.Parent = TextBoxFrame
 
-    -- ฟังก์ชันที่เรียกใช้เมื่อข้อความใน TextBox เปลี่ยนแปลง
-    local function onTextChanged()
-        if callback then
-            callback(textBox.Text)
+    -- ตั้งค่าฟังก์ชัน Callback
+    TextBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed and config.Callback then
+            config.Callback(TextBox.Text)
+        end
+    end)
+
+    return {
+        TextBoxFrame = TextBoxFrame,
+        TextBox = TextBox
+    }
+end
+
+function Xlib:MakeNotification(config)
+    -- สร้าง Notification Frame
+    local NotificationFrame = Instance.new("Frame")
+    NotificationFrame.Size = UDim2.new(0, 300, 0, 100)
+    NotificationFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
+    NotificationFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    NotificationFrame.BorderSizePixel = 0
+    NotificationFrame.Visible = false
+    NotificationFrame.Parent = game:GetService("CoreGui")
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = NotificationFrame
+
+    -- สร้าง Title Label
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+    TitleLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TitleLabel.Text = config.Title or "Notification"
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextSize = 16
+    TitleLabel.Parent = NotificationFrame
+
+    -- สร้าง Message Label
+    local MessageLabel = Instance.new("TextLabel")
+    MessageLabel.Size = UDim2.new(1, -20, 1, -40)
+    MessageLabel.Position = UDim2.new(0, 10, 0, 30)
+    MessageLabel.Text = config.Message or "This is a notification."
+    MessageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MessageLabel.BackgroundTransparency = 1
+    MessageLabel.Font = Enum.Font.Gotham
+    MessageLabel.TextSize = 14
+    MessageLabel.TextWrapped = true
+    MessageLabel.Parent = NotificationFrame
+
+    -- สร้าง Close Button
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Size = UDim2.new(0, 30, 0, 30)
+    CloseButton.Position = UDim2.new(1, -40, 0, 5)
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    CloseButton.Parent = NotificationFrame
+
+    local function fadeOut()
+        for i = 1, 10 do
+            NotificationFrame.BackgroundTransparency = i / 10
+            TitleLabel.TextTransparency = i / 10
+            MessageLabel.TextTransparency = i / 10
+            wait(0.3)
+        end
+        NotificationFrame:Destroy()
+    end
+
+    local function showNotification()
+        NotificationFrame.Visible = true
+        if config.Duration then
+            wait(config.Duration)
+            fadeOut()
         end
     end
 
-    -- เชื่อมต่อการเปลี่ยนแปลงข้อความ
-    textBox:GetPropertyChangedSignal("Text"):Connect(onTextChanged)
-
-    return textBoxFrame
-end
-
--- เพิ่มฟังก์ชัน Xlib:MakeTextBox
-function Xlib:MakeTextBox(options)
-    assert(options.Name, "Name is required")
-    assert(options.Parent, "Parent is required")
-    assert(options.PlaceholderText, "PlaceholderText is required")
-    return self:TextBox(options.Name, options.Parent, options.PlaceholderText, options.Callback)
-end
-
-function Xlib:Notification(title, message, duration, parent)
-    -- Create the notification frame
-    local notificationFrame = Instance.new("Frame")
-    notificationFrame.Size = UDim2.new(0.3, 0, 0.1, 0)
-    notificationFrame.Position = UDim2.new(0.35, 0, 0.05, 0) -- Adjust position as needed
-    notificationFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    notificationFrame.BackgroundTransparency = 0.5
-    notificationFrame.BorderSizePixel = 0
-    notificationFrame.Parent = parent
-
-    -- Create UICorner for rounded corners
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = notificationFrame
-
-    -- Create title label
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, 0, 0, 30)
-    titleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    titleLabel.BackgroundTransparency = 0.5
-    titleLabel.Text = title
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 18
-    titleLabel.Parent = notificationFrame
-
-    -- Create message label
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, 0, 0, 60)
-    messageLabel.Position = UDim2.new(0, 0, 0, 30)
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = message
-    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    messageLabel.Font = Enum.Font.Gotham
-    messageLabel.TextSize = 14
-    messageLabel.TextWrapped = true
-    messageLabel.Parent = notificationFrame
-
-    -- Hide the notification after the specified duration
-    delay(duration, function()
-        notificationFrame:Destroy()
+    CloseButton.MouseButton1Click:Connect(function()
+        fadeOut()
     end)
-end
 
--- เพิ่มฟังก์ชัน Xlib:MakeNotification
-function Xlib:MakeNotification(options)
-    assert(options.Title, "Title is required")
-    assert(options.Message, "Message is required")
-    assert(options.Duration, "Duration is required")
-    assert(options.Parent, "Parent is required")
-    return self:Notification(options.Title, options.Message, options.Duration, options.Parent)
+    if config.ShowOnCreate then
+        showNotification()
+    end
+
+    return {
+        NotificationFrame = NotificationFrame,
+        Show = showNotification,
+    }
 end
 
 return Xlib
