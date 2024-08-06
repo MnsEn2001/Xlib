@@ -37,14 +37,14 @@ function Xlib:MakeWindow(config)
     local MinimizeButton = Instance.new("ImageButton")
     MinimizeButton.Size = UDim2.new(0, 48, 0, 48) -- ขนาดเริ่มต้นของ ImageButton
     MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
-    MinimizeButton.Image = "rbxassetid://18823904123"
+    MinimizeButton.Image = "rbxassetid://13907030576"
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
     local CloseButton = Instance.new("ImageButton")
     CloseButton.Size = UDim2.new(0, 48, 0, 48) -- ขนาดเริ่มต้นของ ImageButton
     CloseButton.Position = UDim2.new(1, -30, 0, 5)
-    CloseButton.Image = "rbxassetid://18823884018"
+    CloseButton.Image = "rbxassetid://13907030576"
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
@@ -77,7 +77,7 @@ function Xlib:MakeWindow(config)
     local MinimizedIcon = Instance.new("ImageButton")
     MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
-    MinimizedIcon.Image = "rbxassetid://18823896668"
+    MinimizedIcon.Image = "rbxassetid://13907030576"
     MinimizedIcon.Visible = false
     MinimizedIcon.Active = true
     MinimizedIcon.Draggable = true
