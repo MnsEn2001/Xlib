@@ -183,8 +183,57 @@ function Xlib:MakeWindow(settings)
 
         return TabHead
     end
+    
+        -- Function to create a tab in the left-side bar
+    function self:MakeTab(tabSettings)
+        if tabSettings.PremiumOnly and not isPremiumUser() then
+            return nil -- Do not create this tab if not a premium user
+        end
+
+        local SidebarTab = Instance.new("TextButton")
+        SidebarTab.Name = tabSettings.Name or "SidebarTab"
+        SidebarTab.Parent = Sidebar
+        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Smaller height
+        SidebarTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        SidebarTab.BorderSizePixel = 0
+        SidebarTab.Text = tabSettings.Name or "Tab 1"
+        SidebarTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        SidebarTab.TextScaled = true
+        SidebarTab.LayoutOrder = #Tabs + 1
+        
+        -- Create a corresponding tab content frame
+        local SidebarTabFrame = Instance.new("Frame")
+        SidebarTabFrame.Name = tabSettings.Name or "SidebarTabFrame"
+        SidebarTabFrame.Parent = TabContent
+        SidebarTabFrame.Size = UDim2.new(1, 0, 1, 0)
+        SidebarTabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        SidebarTabFrame.BorderSizePixel = 0
+        SidebarTabFrame.Visible = false
+        
+        table.insert(Tabs, {Head = SidebarTab, Frame = SidebarTabFrame})
+
+        -- Switch to the selected tab
+        local function switchTab()
+            for _, tab in ipairs(Tabs) do
+                tab.Frame.Visible = false
+                tab.Head.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            end
+            SidebarTabFrame.Visible = true
+            SidebarTab.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+        
+        SidebarTab.MouseButton1Click:Connect(switchTab)
+
+        -- Automatically switch to the first tab
+        if #Tabs == 1 then
+            switchTab()
+        end
+
+        return SidebarTab
+    end
 
     return self
 end
 
 return Xlib
+
