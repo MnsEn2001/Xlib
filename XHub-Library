@@ -29,7 +29,7 @@ function Xlib:MakeWindow(settings)
     local Sidebar = Instance.new("Frame")
     Sidebar.Name = "Sidebar"
     Sidebar.Parent = MainFrame
-    Sidebar.Size = UDim2.new(0.2, 0, 1, 0) -- Adjust size
+    Sidebar.Size = UDim2.new(0.2, 0, 1, 0)
     Sidebar.Position = UDim2.new(0, 0, 0, 0)
     Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     Sidebar.BorderSizePixel = 0
@@ -65,7 +65,7 @@ function Xlib:MakeWindow(settings)
     local TabContainer = Instance.new("Frame")
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = MainFrame
-    TabContainer.Size = UDim2.new(0.8, 0, 0.1, 0) -- Adjust size
+    TabContainer.Size = UDim2.new(0.8, 0, 0.1, 0)
     TabContainer.Position = UDim2.new(0.2, 0, 0, 0)
     TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabContainer.BorderSizePixel = 0
@@ -90,7 +90,7 @@ function Xlib:MakeWindow(settings)
     local TabContent = Instance.new("Frame")
     TabContent.Name = "TabContent"
     TabContent.Parent = MainFrame
-    TabContent.Size = UDim2.new(0.8, 0, 0.9, 0) -- Adjust size
+    TabContent.Size = UDim2.new(0.8, 0, 0.9, 0)
     TabContent.Position = UDim2.new(0.2, 0, 0.1, 0)
     TabContent.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     TabContent.BorderSizePixel = 0
@@ -98,11 +98,44 @@ function Xlib:MakeWindow(settings)
     -- Tabs table to store the tab content frames
     local Tabs = {}
     
-    -- Placeholder function to check if the user is premium
-    local function isPremiumUser()
-        -- Implement your own logic to check if the user is a premium user
-        return false -- Change this to actual check
+    -- Add minimize and close buttons
+    local MinimizeButton = Instance.new("TextButton")
+    MinimizeButton.Name = "MinimizeButton"
+    MinimizeButton.Parent = MainFrame
+    MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+    MinimizeButton.Position = UDim2.new(0.98, -35, 0.02, 0)
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    MinimizeButton.BorderSizePixel = 0
+    MinimizeButton.Text = "-"
+    MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MinimizeButton.TextScaled = true
+
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = MainFrame
+    CloseButton.Size = UDim2.new(0, 30, 0, 30)
+    CloseButton.Position = UDim2.new(0.98, -70, 0.02, 0)
+    CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    CloseButton.BorderSizePixel = 0
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextScaled = true
+
+    -- Minimize functionality
+    local isMinimized = false
+    local function toggleMinimize()
+        isMinimized = not isMinimized
+        MainFrame.Size = isMinimized and UDim2.new(0.5, 0, 0.05, 0) or UDim2.new(0.5, 0, 0.5, 0)
+        TabContainer.Visible = not isMinimized
+        Sidebar.Visible = not isMinimized
     end
+    
+    MinimizeButton.MouseButton1Click:Connect(toggleMinimize)
+    
+    -- Close functionality
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
 
     -- Function to create a tab head
     function self:MakeTabHead(tabSettings)
@@ -149,54 +182,6 @@ function Xlib:MakeWindow(settings)
         end
 
         return TabHead
-    end
-
-    -- Function to create a tab in the left-side bar
-    function self:MakeTab(tabSettings)
-        if tabSettings.PremiumOnly and not isPremiumUser() then
-            return nil -- Do not create this tab if not a premium user
-        end
-
-        local SidebarTab = Instance.new("TextButton")
-        SidebarTab.Name = tabSettings.Name or "SidebarTab"
-        SidebarTab.Parent = Sidebar
-        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Smaller height
-        SidebarTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-        SidebarTab.BorderSizePixel = 0
-        SidebarTab.Text = tabSettings.Name or "Tab 1"
-        SidebarTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-        SidebarTab.TextScaled = true
-        SidebarTab.LayoutOrder = #Tabs + 1
-        
-        -- Create a corresponding tab content frame
-        local SidebarTabFrame = Instance.new("Frame")
-        SidebarTabFrame.Name = tabSettings.Name or "SidebarTabFrame"
-        SidebarTabFrame.Parent = TabContent
-        SidebarTabFrame.Size = UDim2.new(1, 0, 1, 0)
-        SidebarTabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        SidebarTabFrame.BorderSizePixel = 0
-        SidebarTabFrame.Visible = false
-        
-        table.insert(Tabs, {Head = SidebarTab, Frame = SidebarTabFrame})
-
-        -- Switch to the selected tab
-        local function switchTab()
-            for _, tab in ipairs(Tabs) do
-                tab.Frame.Visible = false
-                tab.Head.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            end
-            SidebarTabFrame.Visible = true
-            SidebarTab.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        end
-        
-        SidebarTab.MouseButton1Click:Connect(switchTab)
-
-        -- Automatically switch to the first tab
-        if #Tabs == 1 then
-            switchTab()
-        end
-
-        return SidebarTab
     end
 
     return self
