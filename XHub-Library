@@ -1,423 +1,45 @@
+-- XHub-Library.lua
 local Xlib = {}
 
-function Xlib:MakeWindow(config)
+function Xlib:MakeWindow(settings)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "Xlib_Gui"
     ScreenGui.Parent = game:GetService("CoreGui")
-
+    
+    -- Create a frame for the window
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 400, 0, 350)
-    MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
+    MainFrame.Name = settings.Name or "MainFrame"
+    MainFrame.Parent = ScreenGui
+    MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 0
-    MainFrame.Active = true
-    MainFrame.Draggable = true
-    MainFrame.Parent = ScreenGui
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = MainFrame
-
-    local TitleBar = Instance.new("Frame")
-    TitleBar.Size = UDim2.new(1, 0, 0, 30)
-    TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    TitleBar.BorderSizePixel = 0
-    TitleBar.Parent = MainFrame
-
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -60, 1, 0)
-    TitleLabel.Position = UDim2.new(0, 10, 0, 0)
-    TitleLabel.Text = config.Name or "Xlib UI"
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextSize = 18
-    TitleLabel.Parent = TitleBar
-
-    local MinimizeButton = Instance.new("ImageButton")
-    MinimizeButton.Size = UDim2.new(0, 24, 0, 24)
-    MinimizeButton.Position = UDim2.new(1, -55, 0.5, -12)
-    MinimizeButton.Image = "rbxassetid://7733701545"
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    MinimizeButton.Parent = TitleBar
-
-    local CloseButton = Instance.new("ImageButton")
-    CloseButton.Size = UDim2.new(0, 24, 0, 24)
-    CloseButton.Position = UDim2.new(1, -30, 0.5, -12)
-    CloseButton.Image = "rbxassetid://7733701545"
-    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    CloseButton.Parent = TitleBar
-
-    local AspectRatioMinimize = Instance.new("UIAspectRatioConstraint")
-    AspectRatioMinimize.Parent = MinimizeButton
-    AspectRatioMinimize.AspectRatio = 1
-
-    local AspectRatioClose = Instance.new("UIAspectRatioConstraint")
-    AspectRatioClose.Parent = CloseButton
-    AspectRatioClose.AspectRatio = 1
-
-    local TabFrame = Instance.new("ScrollingFrame")
-    TabFrame.Size = UDim2.new(0, 100, 1, -30)
-    TabFrame.Position = UDim2.new(0, 0, 0, 30)
-    TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    TabFrame.BorderSizePixel = 0
-    TabFrame.ScrollBarThickness = 5
-    TabFrame.Parent = MainFrame
-
-    local ContentFrame = Instance.new("ScrollingFrame")
-    ContentFrame.Size = UDim2.new(1, -100, 1, -30)
-    ContentFrame.Position = UDim2.new(0, 100, 0, 30)
-    ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    ContentFrame.BorderSizePixel = 0
-    ContentFrame.ScrollBarThickness = 5
-    ContentFrame.Parent = MainFrame
-
-    local MinimizedIcon = Instance.new("ImageButton")
-    MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
-    MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
-    MinimizedIcon.Image = "rbxassetid://7733701545"
-    MinimizedIcon.Visible = false
-    MinimizedIcon.Active = true
-    MinimizedIcon.Draggable = true
-    MinimizedIcon.Parent = ScreenGui
-
-    local AspectRatioMinimized = Instance.new("UIAspectRatioConstraint")
-    AspectRatioMinimized.Parent = MinimizedIcon
-    AspectRatioMinimized.AspectRatio = 1
-
-    local function minimizeWindow()
-        MainFrame.Visible = false
-        MinimizedIcon.Visible = true
+    MainFrame.Visible = true
+    
+    -- Make the frame adjustable to screen size
+    local function adjustSize()
+        local screenWidth, screenHeight = game:GetService("Workspace").CurrentCamera.ViewportSize.X, game:GetService("Workspace").CurrentCamera.ViewportSize.Y
+        MainFrame.Size = UDim2.new(0, math.min(screenWidth * 0.6, 800), 0, math.min(screenHeight * 0.6, 600))
     end
-
-    local function restoreWindow()
-        MainFrame.Visible = true
-        MinimizedIcon.Visible = false
-    end
-
-    local function closeWindow()
-        ScreenGui:Destroy()
-    end
-
-    MinimizeButton.MouseButton1Click:Connect(minimizeWindow)
-    MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
-    CloseButton.MouseButton1Click:Connect(closeWindow)
-
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-
-    local function update(input)
-        local delta = input.Position - dragStart
-        MinimizedIcon.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-
-    MinimizedIcon.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = MinimizedIcon.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    MinimizedIcon.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
-
-    return {
-        MainFrame = MainFrame,
-        TabFrame = TabFrame,
-        ContentFrame = ContentFrame,
-    }
-end
-
-function Xlib:MakeTab(config)
-    -- Create the main tab frame
-    local Tab = Instance.new("Frame")
-    Tab.Size = UDim2.new(1, -20, 0, 40)
-    Tab.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
-    Tab.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Tab.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Tab
-
-    -- Create the tab button
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1, -20, 1, 0)
-    TabButton.Position = UDim2.new(0, 10, 0, 0)
-    TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    TabButton.Text = config.Name
-    TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TabButton.Font = Enum.Font.Gotham
-    TabButton.TextSize = 14
-    TabButton.Parent = Tab
-
-    local ContentFrame = Instance.new("Frame")
-    ContentFrame.Size = UDim2.new(1, 0, 0, 0)
-    ContentFrame.Position = UDim2.new(0, 0, 1, 0)
-    ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    ContentFrame.BorderSizePixel = 0
-    ContentFrame.Visible = false
-    ContentFrame.Parent = Tab
-
-    -- Create a UIListLayout for content
-    local UIListLayout = Instance.new("UIListLayout")
-    UIListLayout.Parent = ContentFrame
-
-    -- Handle tab switching
-    local function showTab()
-        for _, child in ipairs(config.Parent:GetChildren()) do
-            if child:IsA("Frame") and child ~= Tab then
-                child.ContentFrame.Visible = false
-            end
-        end
-        ContentFrame.Visible = true
-    end
-
-    TabButton.MouseButton1Click:Connect(showTab)
-
-    return {
-        TabButton = TabButton,
-        ContentFrame = ContentFrame,
-    }
-end
-
-function Xlib:MakeButton(config)
-    local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(1, -30, 0, 35) -- ขนาดใหม่
-    Button.Position = UDim2.new(0, 15, 0, (#config.Parent.ToggleContainer:GetChildren()) * 45)
-    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Button.Text = config.Name
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.Font = Enum.Font.Gotham
-    Button.TextSize = 15
-    Button.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10) -- ขนาดมุมที่ใหญ่ขึ้น
-    UICorner.Parent = Button
-
-    Button.MouseButton1Click:Connect(function()
-        if config.Callback then
-            config.Callback()
-        end
-    end)
-end
-
-function Xlib:MakeToggle(config)
-    local Toggle = Instance.new("Frame")
-    Toggle.Size = UDim2.new(1, -20, 0, 40)
-    Toggle.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
-    Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Toggle.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Toggle
-
-    local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Size = UDim2.new(0, 30, 0, 20)
-    ToggleButton.Position = UDim2.new(1, -40, 0.5, -10)
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    ToggleButton.Text = ""
-    ToggleButton.Parent = Toggle
-
-    local ToggleLabel = Instance.new("TextLabel")
-    ToggleLabel.Size = UDim2.new(1, -50, 1, 0)
-    ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
-    ToggleLabel.BackgroundTransparency = 1
-    ToggleLabel.Text = config.Name
-    ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleLabel.Font = Enum.Font.Gotham
-    ToggleLabel.TextSize = 14
-    ToggleLabel.Parent = Toggle
-
-    local toggled = config.Default or false
-
-    ToggleButton.MouseButton1Click:Connect(function()
-        toggled = not toggled
-        ToggleButton.BackgroundColor3 = toggled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-        if config.Callback then
-            config.Callback(toggled)
-        end
-    end)
-end
-
-function Xlib:MakeDropdown(config)
-    local Dropdown = Instance.new("Frame")
-    Dropdown.Size = UDim2.new(1, -20, 0, 40)
-    Dropdown.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
-    Dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Dropdown.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Dropdown
-
-    local DropdownButton = Instance.new("TextButton")
-    DropdownButton.Size = UDim2.new(1, -20, 1, 0)
-    DropdownButton.Position = UDim2.new(0, 10, 0, 0)
-    DropdownButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    DropdownButton.Text = config.Name
-    DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    DropdownButton.Font = Enum.Font.Gotham
-    DropdownButton.TextSize = 14
-    DropdownButton.Parent = Dropdown
-
-    local DropdownList = Instance.new("Frame")
-    DropdownList.Size = UDim2.new(1, 0, 0, 0)
-    DropdownList.Position = UDim2.new(0, 0, 1, 0)
-    DropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    DropdownList.ClipsDescendants = true
-    DropdownList.Parent = Dropdown
-
-    local UIListLayout = Instance.new("UIListLayout")
-    UIListLayout.Parent = DropdownList
-
-    local expanded = false
-
-    DropdownButton.MouseButton1Click:Connect(function()
-        expanded = not expanded
-        DropdownList.Size = expanded and UDim2.new(1, 0, 0, #config.Options * 40) or UDim2.new(1, 0, 0, 0)
-    end)
-
-    for _, option in ipairs(config.Options) do
-        local OptionButton = Instance.new("TextButton")
-        OptionButton.Size = UDim2.new(1, -20, 0, 40)
-        OptionButton.Position = UDim2.new(0, 10, 0, (#DropdownList:GetChildren() - 1) * 40)
-        OptionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        OptionButton.Text = option
-        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        OptionButton.Font = Enum.Font.Gotham
-        OptionButton.TextSize = 14
-        OptionButton.Parent = DropdownList
-
-        OptionButton.MouseButton1Click:Connect(function()
-            DropdownButton.Text = option
-            if config.Callback then
-                config.Callback(option)
-            end
-            expanded = false
-            DropdownList.Size = UDim2.new(1, 0, 0, 0)
-        end)
-    end
-end
-
-function Xlib:MakeTextBox(config)
-    local TextBox = Instance.new("Frame")
-    TextBox.Size = UDim2.new(1, -20, 0, 50)
-    TextBox.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
-    TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    TextBox.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = TextBox
-
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -20, 0, 20)
-    Label.Position = UDim2.new(0, 10, 0, 0)
-    Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Label.Text = config.Label
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.Font = Enum.Font.Gotham
-    Label.TextSize = 14
-    Label.Parent = TextBox
-
-    local InputBox = Instance.new("TextBox")
-    InputBox.Size = UDim2.new(1, -20, 0, 25)
-    InputBox.Position = UDim2.new(0, 10, 0, 25)
-    InputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    InputBox.Font = Enum.Font.Gotham
-    InputBox.TextSize = 14
-    InputBox.ClearTextOnFocus = false
-    InputBox.Parent = TextBox
-
-    InputBox.FocusLost:Connect(function()
-        if config.Callback then
-            config.Callback(InputBox.Text)
-        end
-    end)
-end
-
-function Xlib:MakeLabel(config)
-    local LabelFrame = Instance.new("Frame")
-    LabelFrame.Size = UDim2.new(1, -20, 0, 50)
-    LabelFrame.Position = UDim2.new(0, 10, 0, (#config.Parent.ToggleContainer:GetChildren()) * 50)
-    LabelFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    LabelFrame.Parent = config.Parent.ToggleContainer
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = LabelFrame
-
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -20, 1, 0)
-    Label.Position = UDim2.new(0, 10, 0, 0)
-    Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.Font = Enum.Font.Gotham
-    Label.TextSize = 14
-    Label.Text = config.Text or "Label Text"
-    Label.TextWrapped = true
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = LabelFrame
-end
-
-function Xlib:MakeNotification(config)
-    local Notification = Instance.new("Frame")
-    Notification.Size = UDim2.new(0, 300, 0, 80)
-    Notification.Position = UDim2.new(1, -320, 0, 20)
-    Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Notification.BackgroundTransparency = 0.8
-    Notification.BorderSizePixel = 0
-    Notification.Parent = game.Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui")
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = Notification
-
+    
+    adjustSize()
+    game:GetService("Workspace").CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustSize)
+    
+    -- Add a title to the frame
     local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(1, 0, 0, 30)
-    Title.Position = UDim2.new(0, 0, 0, 0)
-    Title.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    Title.Text = config.Title or "Notification Title"
+    Title.Name = "Title"
+    Title.Parent = MainFrame
+    Title.Size = UDim2.new(1, 0, 0.1, 0)
+    Title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Title.BorderSizePixel = 0
+    Title.Text = settings.Name or "Title of the library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.Font = Enum.Font.GothamBold
-    Title.TextSize = 18
-    Title.Parent = Notification
-
-    local Message = Instance.new("TextLabel")
-    Message.Size = UDim2.new(1, -20, 0, 50)
-    Message.Position = UDim2.new(0, 10, 0, 30)
-    Message.BackgroundTransparency = 1
-    Message.Text = config.Message or "Notification Message"
-    Message.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Message.Font = Enum.Font.Gotham
-    Message.TextSize = 14
-    Message.TextWrapped = true
-    Message.Parent = Notification
-
-    wait(config.Duration or 5)  -- ปิดการแจ้งเตือนหลังจากเวลาที่กำหนด
-    Notification:Destroy()
+    Title.TextScaled = true
+    
+    -- Add other UI elements based on settings
+    
+    return ScreenGui
 end
 
 return Xlib
