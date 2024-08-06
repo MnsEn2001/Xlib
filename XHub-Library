@@ -97,13 +97,13 @@ function Xlib:MakeWindow(settings)
     
     -- Tabs table to store the tab content frames
     local Tabs = {}
-    
+        
     -- Add minimize and close buttons
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Parent = MainFrame
-    MinimizeButton.Size = UDim2.new(0, 120, 1, 0) -- Match TabHead size
-    MinimizeButton.Position = UDim2.new(0.8, 0, 0, 0) -- Positioned at the right of the window
+    MinimizeButton.Size = UDim2.new(0, 40, 0, 40) -- Adjusted size
+    MinimizeButton.Position = UDim2.new(1, -80, 0, 10) -- Positioned at the right of the window
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = "-"
@@ -114,8 +114,8 @@ function Xlib:MakeWindow(settings)
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
-    CloseButton.Size = UDim2.new(0, 120, 1, 0) -- Match TabHead size
-    CloseButton.Position = UDim2.new(0.8, 120, 0, 0) -- Positioned next to MinimizeButton
+    CloseButton.Size = UDim2.new(0, 40, 0, 40) -- Adjusted size
+    CloseButton.Position = UDim2.new(1, -40, 0, 10) -- Positioned next to MinimizeButton
     CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = "X"
