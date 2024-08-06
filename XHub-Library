@@ -35,18 +35,27 @@ function Xlib:MakeWindow(config)
     TitleLabel.Parent = TitleBar
 
     local MinimizeButton = Instance.new("ImageButton")
-    MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0) -- ขนาดเป็น 10% ของขนาดหน้าต่าง
+    MinimizeButton.Size = UDim2.new(0, 48, 0, 48) -- ขนาดเริ่มต้นของ ImageButton
     MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
     MinimizeButton.Image = "rbxassetid://18823904123"
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
     local CloseButton = Instance.new("ImageButton")
-    CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0) -- ขนาดเป็น 10% ของขนาดหน้าต่าง
+    CloseButton.Size = UDim2.new(0, 48, 0, 48) -- ขนาดเริ่มต้นของ ImageButton
     CloseButton.Position = UDim2.new(1, -30, 0, 5)
     CloseButton.Image = "rbxassetid://18823884018"
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
+
+    -- Adding UIAspectRatioConstraint to maintain aspect ratio
+    local AspectRatioMinimize = Instance.new("UIAspectRatioConstraint")
+    AspectRatioMinimize.Parent = MinimizeButton
+    AspectRatioMinimize.AspectRatio = 1 -- Adjust as needed
+
+    local AspectRatioClose = Instance.new("UIAspectRatioConstraint")
+    AspectRatioClose.Parent = CloseButton
+    AspectRatioClose.AspectRatio = 1 -- Adjust as needed
 
     local TabFrame = Instance.new("ScrollingFrame")
     TabFrame.Size = UDim2.new(0, 100, 1, -30)
@@ -73,6 +82,11 @@ function Xlib:MakeWindow(config)
     MinimizedIcon.Active = true
     MinimizedIcon.Draggable = true
     MinimizedIcon.Parent = ScreenGui
+
+    -- Adding UIAspectRatioConstraint to minimized icon
+    local AspectRatioMinimized = Instance.new("UIAspectRatioConstraint")
+    AspectRatioMinimized.Parent = MinimizedIcon
+    AspectRatioMinimized.AspectRatio = 1 -- Adjust as needed
 
     -- Minimize and restore functions
     local function minimizeWindow()
