@@ -102,26 +102,26 @@ function Xlib:MakeWindow(settings)
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Parent = MainFrame
-    MinimizeButton.Size = UDim2.new(0, 40, 0, 40) -- Adjusted size
-    MinimizeButton.Position = UDim2.new(1, -80, 0, 10) -- Positioned at the right of the window
+    MinimizeButton.Size = UDim2.new(0, 30, 0, 30) -- Adjusted size
+    MinimizeButton.Position = UDim2.new(1, -70, 0, 10) -- Positioned at the right of the window
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = "-"
     MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizeButton.TextScaled = true
-    MinimizeButton.TextSize = 24
+    MinimizeButton.TextSize = 16
     
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
-    CloseButton.Size = UDim2.new(0, 40, 0, 40) -- Adjusted size
+    CloseButton.Size = UDim2.new(0, 30, 0, 30) -- Adjusted size
     CloseButton.Position = UDim2.new(1, -40, 0, 10) -- Positioned next to MinimizeButton
     CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = "X"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextScaled = true
-    CloseButton.TextSize = 24
+    CloseButton.TextSize = 16
 
     -- Minimize functionality
     local isMinimized = false
@@ -168,7 +168,7 @@ function Xlib:MakeWindow(settings)
     end)
 
     -- Function to create a tab head
-    function self:MakeTabHead(tabSettings)
+    function Xlib:MakeTabHead(tabSettings)
         if tabSettings.PremiumOnly and not isPremiumUser() then
             return nil -- Do not create this tab if not a premium user
         end
@@ -177,12 +177,13 @@ function Xlib:MakeWindow(settings)
         local TabHead = Instance.new("TextButton")
         TabHead.Name = tabSettings.Name or "TabHead"
         TabHead.Parent = TabContainer
-        TabHead.Size = UDim2.new(0, 120, 1, 0) -- Slightly larger
+        TabHead.Size = UDim2.new(0, 120, 1, 0) -- Width adjusted, height matches TabContainer
         TabHead.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
         TabHead.BorderSizePixel = 0
         TabHead.Text = tabSettings.Name or "Tab 1"
         TabHead.TextColor3 = Color3.fromRGB(255, 255, 255)
         TabHead.TextScaled = true
+        TabHead.TextSize = 24
         TabHead.LayoutOrder = #Tabs + 1
     
         -- Create the corresponding tab content frame
@@ -193,10 +194,10 @@ function Xlib:MakeWindow(settings)
         TabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
         TabFrame.BorderSizePixel = 0
         TabFrame.Visible = false
-        
+    
         -- Store the tab information
         table.insert(Tabs, {Head = TabHead, Frame = TabFrame})
-        
+    
         -- Function to switch to the selected tab
         local function switchTab()
             for _, tab in ipairs(Tabs) do
@@ -206,7 +207,7 @@ function Xlib:MakeWindow(settings)
             TabFrame.Visible = true
             TabHead.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         end
-        
+    
         TabHead.MouseButton1Click:Connect(switchTab)
     
         -- Automatically switch to the first tab
@@ -217,8 +218,8 @@ function Xlib:MakeWindow(settings)
         return TabHead
     end
     
-    -- Function to create a tab in the left-side bar
-    function self:MakeTab(tabSettings)
+-- Function to create a tab in the left-side bar
+    function Xlib:MakeTab(tabSettings)
         if tabSettings.PremiumOnly and not isPremiumUser() then
             return nil -- Do not create this tab if not a premium user
         end
@@ -227,7 +228,7 @@ function Xlib:MakeWindow(settings)
         local SidebarTab = Instance.new("TextButton")
         SidebarTab.Name = tabSettings.Name or "SidebarTab"
         SidebarTab.Parent = Sidebar
-        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Adjust height to match TabHead
+        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Height adjusted to match TabHead
         SidebarTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
         SidebarTab.BorderSizePixel = 0
         SidebarTab.Text = tabSettings.Name or "Tab 1"
@@ -264,9 +265,10 @@ function Xlib:MakeWindow(settings)
         if #Tabs == 1 then
             switchTab()
         end
-    
+        
         return SidebarTab
     end
+    
     return self
 end
 
