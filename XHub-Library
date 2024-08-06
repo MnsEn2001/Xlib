@@ -6,8 +6,8 @@ function Xlib:MakeWindow(config)
     ScreenGui.Parent = game:GetService("CoreGui")
 
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 600, 0, 375) -- ขนาดใหม่ที่สอดคล้องกับหลักทองคำ
-    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -187.5)
+    MainFrame.Size = UDim2.new(0, 400, 0, 350)
+    MainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 0
     MainFrame.Active = true
@@ -15,68 +15,66 @@ function Xlib:MakeWindow(config)
     MainFrame.Parent = ScreenGui
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 15) -- ขนาดมุมที่ใหญ่ขึ้นเล็กน้อย
+    UICorner.CornerRadius = UDim.new(0, 10)
     UICorner.Parent = MainFrame
 
     local TitleBar = Instance.new("Frame")
-    TitleBar.Size = UDim2.new(1, 0, 0, 40)
+    TitleBar.Size = UDim2.new(1, 0, 0, 30)
     TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
 
     local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -80, 1, 0)
+    TitleLabel.Size = UDim2.new(1, -60, 1, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 0)
     TitleLabel.Text = config.Name or "Xlib UI"
     TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextSize = 20
+    TitleLabel.TextSize = 18
     TitleLabel.Parent = TitleBar
 
-    local MinimizeButton = Instance.new("TextButton")
-    MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
-    MinimizeButton.Position = UDim2.new(1, -65, 0.5, -12.5)
-    MinimizeButton.Text = "<"
-    MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    local MinimizeButton = Instance.new("ImageButton")
+    MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0) -- ขนาดเป็น 10% ของขนาดหน้าต่าง
+    MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
+    MinimizeButton.Image = "rbxassetid://18823904123"
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     MinimizeButton.Parent = TitleBar
 
-    local CloseButton = Instance.new("TextButton")
-    CloseButton.Size = UDim2.new(0, 25, 0, 25)
-    CloseButton.Position = UDim2.new(1, -35, 0.5, -12.5)
-    CloseButton.Text = "X"
-    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    local CloseButton = Instance.new("ImageButton")
+    CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0) -- ขนาดเป็น 10% ของขนาดหน้าต่าง
+    CloseButton.Position = UDim2.new(1, -30, 0, 5)
+    CloseButton.Image = "rbxassetid://18823884018"
     CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.Parent = TitleBar
 
     local TabFrame = Instance.new("ScrollingFrame")
-    TabFrame.Size = UDim2.new(0, 150, 1, -40)
-    TabFrame.Position = UDim2.new(0, 0, 0, 40)
+    TabFrame.Size = UDim2.new(0, 100, 1, -30)
+    TabFrame.Position = UDim2.new(0, 0, 0, 30)
     TabFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabFrame.BorderSizePixel = 0
     TabFrame.ScrollBarThickness = 5
     TabFrame.Parent = MainFrame
 
     local ContentFrame = Instance.new("ScrollingFrame")
-    ContentFrame.Size = UDim2.new(1, -150, 1, -40)
-    ContentFrame.Position = UDim2.new(0, 150, 0, 40)
+    ContentFrame.Size = UDim2.new(1, -100, 1, -30)
+    ContentFrame.Position = UDim2.new(0, 100, 0, 30)
     ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     ContentFrame.BorderSizePixel = 0
     ContentFrame.ScrollBarThickness = 5
     ContentFrame.Parent = MainFrame
 
-    local MinimizedIcon = Instance.new("TextButton")
-    MinimizedIcon.Size = UDim2.new(0, 75, 0, 40)
+    -- Create minimized icon
+    local MinimizedIcon = Instance.new("ImageButton")
+    MinimizedIcon.Size = UDim2.new(0, 50, 0, 50)
     MinimizedIcon.Position = UDim2.new(0, 10, 0, 10)
-    MinimizedIcon.Text = "> XHub <"
-    MinimizedIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-    MinimizedIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MinimizedIcon.Image = "rbxassetid://18823896668"
     MinimizedIcon.Visible = false
     MinimizedIcon.Active = true
     MinimizedIcon.Draggable = true
     MinimizedIcon.Parent = ScreenGui
 
+    -- Minimize and restore functions
     local function minimizeWindow()
         MainFrame.Visible = false
         MinimizedIcon.Visible = true
@@ -95,6 +93,7 @@ function Xlib:MakeWindow(config)
     MinimizedIcon.MouseButton1Click:Connect(restoreWindow)
     CloseButton.MouseButton1Click:Connect(closeWindow)
 
+    -- Make minimized icon draggable
     local dragging
     local dragInput
     local dragStart
@@ -137,6 +136,7 @@ function Xlib:MakeWindow(config)
         ContentFrame = ContentFrame,
     }
 end
+
 
 function Xlib:MakeTab(config)
     -- Create the main tab frame
