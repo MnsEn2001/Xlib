@@ -45,6 +45,14 @@ function Xlib:MakeWindow(settings)
     TabContainer.Position = UDim2.new(0, 0, 0.1, 0)
     TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabContainer.BorderSizePixel = 0
+    
+    -- Add a UIListLayout to organize tabs horizontally
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.Parent = TabContainer
+    TabLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     -- Container for tab content
     local TabContent = Instance.new("Frame")
