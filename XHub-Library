@@ -103,7 +103,7 @@ function Xlib:MakeWindow(settings)
     MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Parent = MainFrame
     MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-    MinimizeButton.Position = UDim2.new(0.98, -35, 0.02, 0)
+    MinimizeButton.Position = UDim2.new(0.02, 0, 0.02, 0)
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = "-"
@@ -114,7 +114,7 @@ function Xlib:MakeWindow(settings)
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.Size = UDim2.new(0, 30, 0, 30)
-    CloseButton.Position = UDim2.new(0.98, -70, 0.02, 0)
+    CloseButton.Position = UDim2.new(0.02, 35, 0.02, 0)
     CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = "X"
@@ -125,9 +125,37 @@ function Xlib:MakeWindow(settings)
     local isMinimized = false
     local function toggleMinimize()
         isMinimized = not isMinimized
-        MainFrame.Size = isMinimized and UDim2.new(0.5, 0, 0.05, 0) or UDim2.new(0.5, 0, 0.5, 0)
-        TabContainer.Visible = not isMinimized
-        Sidebar.Visible = not isMinimized
+        if isMinimized then
+            MainFrame.Size = UDim2.new(0, 60, 0, 60) -- Mini icon size
+            MinimizeButton.Visible = false
+            CloseButton.Visible = false
+            
+            -- Create mini icon
+            local MiniIcon = Instance.new("TextButton")
+            MiniIcon.Name = "MiniIcon"
+            MiniIcon.Parent = ScreenGui
+            MiniIcon.Size = UDim2.new(0, 60, 0, 60)
+            MiniIcon.Position = UDim2.new(0, 0, 0.1, 0)
+            MiniIcon.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            MiniIcon.BorderSizePixel = 0
+            MiniIcon.Text = settings.Name or "Xlib"
+            MiniIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+            MiniIcon.TextScaled = true
+            MiniIcon.MouseButton1Click:Connect(function()
+                MiniIcon:Destroy()
+                MainFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
+                MinimizeButton.Visible = true
+                CloseButton.Visible = true
+                TabContainer.Visible = true
+                Sidebar.Visible = true
+            end)
+        else
+            MainFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
+            MinimizeButton.Visible = true
+            CloseButton.Visible = true
+            TabContainer.Visible = true
+            Sidebar.Visible = true
+        end
     end
     
     MinimizeButton.MouseButton1Click:Connect(toggleMinimize)
@@ -142,7 +170,8 @@ function Xlib:MakeWindow(settings)
         if tabSettings.PremiumOnly and not isPremiumUser() then
             return nil -- Do not create this tab if not a premium user
         end
-
+    
+        -- Create the tab head button
         local TabHead = Instance.new("TextButton")
         TabHead.Name = tabSettings.Name or "TabHead"
         TabHead.Parent = TabContainer
@@ -153,7 +182,8 @@ function Xlib:MakeWindow(settings)
         TabHead.TextColor3 = Color3.fromRGB(255, 255, 255)
         TabHead.TextScaled = true
         TabHead.LayoutOrder = #Tabs + 1
-
+    
+        -- Create the corresponding tab content frame
         local TabFrame = Instance.new("Frame")
         TabFrame.Name = tabSettings.Name or "TabFrame"
         TabFrame.Parent = TabContent
@@ -162,9 +192,10 @@ function Xlib:MakeWindow(settings)
         TabFrame.BorderSizePixel = 0
         TabFrame.Visible = false
         
+        -- Store the tab information
         table.insert(Tabs, {Head = TabHead, Frame = TabFrame})
         
-        -- Switch to the selected tab
+        -- Function to switch to the selected tab
         local function switchTab()
             for _, tab in ipairs(Tabs) do
                 tab.Frame.Visible = false
@@ -175,21 +206,22 @@ function Xlib:MakeWindow(settings)
         end
         
         TabHead.MouseButton1Click:Connect(switchTab)
-
+    
         -- Automatically switch to the first tab
         if #Tabs == 1 then
             switchTab()
         end
-
+    
         return TabHead
     end
     
-        -- Function to create a tab in the left-side bar
+    -- Function to create a tab in the left-side bar
     function self:MakeTab(tabSettings)
         if tabSettings.PremiumOnly and not isPremiumUser() then
             return nil -- Do not create this tab if not a premium user
         end
-
+    
+        -- Create the tab button for the sidebar
         local SidebarTab = Instance.new("TextButton")
         SidebarTab.Name = tabSettings.Name or "SidebarTab"
         SidebarTab.Parent = Sidebar
@@ -201,7 +233,7 @@ function Xlib:MakeWindow(settings)
         SidebarTab.TextScaled = true
         SidebarTab.LayoutOrder = #Tabs + 1
         
-        -- Create a corresponding tab content frame
+        -- Create the corresponding tab content frame
         local SidebarTabFrame = Instance.new("Frame")
         SidebarTabFrame.Name = tabSettings.Name or "SidebarTabFrame"
         SidebarTabFrame.Parent = TabContent
@@ -210,9 +242,10 @@ function Xlib:MakeWindow(settings)
         SidebarTabFrame.BorderSizePixel = 0
         SidebarTabFrame.Visible = false
         
+        -- Store the tab information
         table.insert(Tabs, {Head = SidebarTab, Frame = SidebarTabFrame})
-
-        -- Switch to the selected tab
+    
+        -- Function to switch to the selected tab
         local function switchTab()
             for _, tab in ipairs(Tabs) do
                 tab.Frame.Visible = false
@@ -223,12 +256,12 @@ function Xlib:MakeWindow(settings)
         end
         
         SidebarTab.MouseButton1Click:Connect(switchTab)
-
+    
         -- Automatically switch to the first tab
         if #Tabs == 1 then
             switchTab()
         end
-
+    
         return SidebarTab
     end
 
@@ -236,4 +269,3 @@ function Xlib:MakeWindow(settings)
 end
 
 return Xlib
-
