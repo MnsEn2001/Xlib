@@ -37,12 +37,29 @@ function Xlib:MakeWindow(settings)
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextScaled = true
 
+    -- Container for left-side tabs
+    local Sidebar = Instance.new("Frame")
+    Sidebar.Name = "Sidebar"
+    Sidebar.Parent = MainFrame
+    Sidebar.Size = UDim2.new(0.33, 0, 1, 0) -- 1/3 of the main window width
+    Sidebar.Position = UDim2.new(0, 0, 0, 0)
+    Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Sidebar.BorderSizePixel = 0
+    
+    -- Add a UIListLayout to organize left-side tabs vertically
+    local SidebarLayout = Instance.new("UIListLayout")
+    SidebarLayout.Parent = Sidebar
+    SidebarLayout.FillDirection = Enum.FillDirection.Vertical
+    SidebarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    SidebarLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+    SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
     -- Container for tab headers
     local TabContainer = Instance.new("Frame")
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = MainFrame
-    TabContainer.Size = UDim2.new(1, 0, 0.1, 0)
-    TabContainer.Position = UDim2.new(0, 0, 0.1, 0)
+    TabContainer.Size = UDim2.new(0.67, 0, 0.1, 0) -- Adjusted for left-side tabs
+    TabContainer.Position = UDim2.new(0.33, 0, 0.1, 0)
     TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     TabContainer.BorderSizePixel = 0
     
@@ -58,14 +75,14 @@ function Xlib:MakeWindow(settings)
     local TabContent = Instance.new("Frame")
     TabContent.Name = "TabContent"
     TabContent.Parent = MainFrame
-    TabContent.Size = UDim2.new(1, 0, 0.8, 0)
-    TabContent.Position = UDim2.new(0, 0, 0.2, 0)
+    TabContent.Size = UDim2.new(0.67, 0, 0.8, 0) -- Adjusted for left-side tabs
+    TabContent.Position = UDim2.new(0.33, 0, 0.2, 0)
     TabContent.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     TabContent.BorderSizePixel = 0
     
     -- Tabs table to store the tab content frames
     local Tabs = {}
-
+    
     -- Placeholder function to check if the user is premium
     local function isPremiumUser()
         -- Implement your own logic to check if the user is a premium user
@@ -118,7 +135,55 @@ function Xlib:MakeWindow(settings)
 
         return TabHead
     end
-    
+
+    -- Function to create a tab in the left-side bar
+    function self:MakeTab(tabSettings)
+        if tabSettings.PremiumOnly and not isPremiumUser() then
+            return nil -- Do not create this tab if not a premium user
+        end
+
+        local SidebarTab = Instance.new("TextButton")
+        SidebarTab.Name = tabSettings.Name or "SidebarTab"
+        SidebarTab.Parent = Sidebar
+        SidebarTab.Size = UDim2.new(1, 0, 0, 50) -- Height is fixed, width is 100% of the sidebar
+        SidebarTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        SidebarTab.BorderSizePixel = 0
+        SidebarTab.Text = tabSettings.Name or "Tab 1"
+        SidebarTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        SidebarTab.TextScaled = true
+        SidebarTab.LayoutOrder = #Tabs + 1
+        
+        -- Create a corresponding tab content frame
+        local SidebarTabFrame = Instance.new("Frame")
+        SidebarTabFrame.Name = tabSettings.Name or "SidebarTabFrame"
+        SidebarTabFrame.Parent = TabContent
+        SidebarTabFrame.Size = UDim2.new(1, 0, 1, 0)
+        SidebarTabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        SidebarTabFrame.BorderSizePixel = 0
+        SidebarTabFrame.Visible = false
+        
+        table.insert(Tabs, {Head = SidebarTab, Frame = SidebarTabFrame})
+
+        -- Switch to the selected tab
+        local function switchTab()
+            for _, tab in ipairs(Tabs) do
+                tab.Frame.Visible = false
+                tab.Head.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            end
+            SidebarTabFrame.Visible = true
+            SidebarTab.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+
+        SidebarTab.MouseButton1Click:Connect(switchTab)
+
+        -- Automatically switch to the first tab
+        if #Tabs == 1 then
+            switchTab()
+        end
+
+        return SidebarTab
+    end
+
     return self
 end
 
