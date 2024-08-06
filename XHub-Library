@@ -102,24 +102,26 @@ function Xlib:MakeWindow(settings)
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Parent = MainFrame
-    MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-    MinimizeButton.Position = UDim2.new(0.02, 0, 0.02, 0)
+    MinimizeButton.Size = UDim2.new(0, 120, 1, 0) -- Match TabHead size
+    MinimizeButton.Position = UDim2.new(0.8, 0, 0, 0) -- Positioned at the right of the window
     MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = "-"
     MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizeButton.TextScaled = true
-
+    MinimizeButton.TextSize = 24
+    
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
-    CloseButton.Size = UDim2.new(0, 30, 0, 30)
-    CloseButton.Position = UDim2.new(0.02, 35, 0.02, 0)
+    CloseButton.Size = UDim2.new(0, 120, 1, 0) -- Match TabHead size
+    CloseButton.Position = UDim2.new(0.8, 120, 0, 0) -- Positioned next to MinimizeButton
     CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = "X"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextScaled = true
+    CloseButton.TextSize = 24
 
     -- Minimize functionality
     local isMinimized = false
@@ -225,12 +227,13 @@ function Xlib:MakeWindow(settings)
         local SidebarTab = Instance.new("TextButton")
         SidebarTab.Name = tabSettings.Name or "SidebarTab"
         SidebarTab.Parent = Sidebar
-        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Smaller height
+        SidebarTab.Size = UDim2.new(1, 0, 0, 40) -- Adjust height to match TabHead
         SidebarTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
         SidebarTab.BorderSizePixel = 0
         SidebarTab.Text = tabSettings.Name or "Tab 1"
         SidebarTab.TextColor3 = Color3.fromRGB(255, 255, 255)
         SidebarTab.TextScaled = true
+        SidebarTab.TextSize = 24 -- Adjust text size to match TabHead
         SidebarTab.LayoutOrder = #Tabs + 1
         
         -- Create the corresponding tab content frame
@@ -264,7 +267,6 @@ function Xlib:MakeWindow(settings)
     
         return SidebarTab
     end
-
     return self
 end
 
