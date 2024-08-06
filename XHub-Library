@@ -36,10 +36,72 @@ function Xlib:MakeWindow(settings)
     Title.Text = settings.Name or "Title of the library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextScaled = true
+
+    -- Container for tab headers
+    local TabContainer = Instance.new("Frame")
+    TabContainer.Name = "TabContainer"
+    TabContainer.Parent = MainFrame
+    TabContainer.Size = UDim2.new(1, 0, 0.1, 0)
+    TabContainer.Position = UDim2.new(0, 0, 0.1, 0)
+    TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    TabContainer.BorderSizePixel = 0
+
+    -- Container for tab content
+    local TabContent = Instance.new("Frame")
+    TabContent.Name = "TabContent"
+    TabContent.Parent = MainFrame
+    TabContent.Size = UDim2.new(1, 0, 0.8, 0)
+    TabContent.Position = UDim2.new(0, 0, 0.2, 0)
+    TabContent.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    TabContent.BorderSizePixel = 0
     
-    -- Add other UI elements based on settings
+    -- Tabs table to store the tab content frames
+    local Tabs = {}
+
+    -- Function to create a tab head
+    function self:MakeTabHead(tabSettings)
+        local TabHead = Instance.new("TextButton")
+        TabHead.Name = tabSettings.Name or "TabHead"
+        TabHead.Parent = TabContainer
+        TabHead.Size = UDim2.new(0, 100, 1, 0)
+        TabHead.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        TabHead.BorderSizePixel = 0
+        TabHead.Text = tabSettings.Name or "Tab 1"
+        TabHead.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TabHead.TextScaled = true
+        TabHead.LayoutOrder = #Tabs + 1
+
+        local TabFrame = Instance.new("Frame")
+        TabFrame.Name = tabSettings.Name or "TabFrame"
+        TabFrame.Parent = TabContent
+        TabFrame.Size = UDim2.new(1, 0, 1, 0)
+        TabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        TabFrame.BorderSizePixel = 0
+        TabFrame.Visible = false
+        
+        table.insert(Tabs, {Head = TabHead, Frame = TabFrame})
+        
+        -- Switch to the selected tab
+        local function switchTab()
+            for _, tab in ipairs(Tabs) do
+                tab.Frame.Visible = false
+                tab.Head.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            end
+            TabFrame.Visible = true
+            TabHead.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+        
+        TabHead.MouseButton1Click:Connect(switchTab)
+
+        -- Automatically switch to the first tab
+        if #Tabs == 1 then
+            switchTab()
+        end
+
+        return TabHead
+    end
     
-    return ScreenGui
+    return self
 end
 
 return Xlib
