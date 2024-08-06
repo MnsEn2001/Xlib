@@ -69,13 +69,13 @@ function Xlib:MakeWindow(settings)
     -- Placeholder function to check if the user is premium
     local function isPremiumUser()
         -- Implement your own logic to check if the user is a premium user
-        return false
+        return false -- Change this to actual check
     end
 
     -- Function to create a tab head
     function self:MakeTabHead(tabSettings)
         if tabSettings.PremiumOnly and not isPremiumUser() then
-            return nil
+            return nil -- Do not create this tab if not a premium user
         end
 
         local TabHead = Instance.new("TextButton")
