@@ -66,8 +66,18 @@ function Xlib:MakeWindow(settings)
     -- Tabs table to store the tab content frames
     local Tabs = {}
 
+    -- Placeholder function to check if the user is premium
+    local function isPremiumUser()
+        -- Implement your own logic to check if the user is a premium user
+        return false
+    end
+
     -- Function to create a tab head
     function self:MakeTabHead(tabSettings)
+        if tabSettings.PremiumOnly and not isPremiumUser() then
+            return nil
+        end
+
         local TabHead = Instance.new("TextButton")
         TabHead.Name = tabSettings.Name or "TabHead"
         TabHead.Parent = TabContainer
