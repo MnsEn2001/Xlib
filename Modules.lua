@@ -319,6 +319,8 @@ function Xlib:MakeWindow(settings)
     }
 end
 
+return Xlib
+
 local selectedTab = nil
 function Xlib:MakeTab(settings)
     local TabFrame = Instance.new("TextButton")
@@ -877,7 +879,3 @@ function Xlib:MakeTextbox(settings)
         TextBoxTitle = TextBoxTitle
     }
 end
-
-return {
-    Xlib = Xlib
-}
