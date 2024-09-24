@@ -82,6 +82,7 @@ function Xlib:MakeWindow(settings)
     TabR.Size = UDim2.new(0.7, 0, 1, -20)
     TabR.Position = UDim2.new(0.3, 0, 0, 35)
     TabR.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    TabR.BorderSizePixel = 0
 
     local Description = Instance.new("TextLabel")
     Description.Name = "Description"
