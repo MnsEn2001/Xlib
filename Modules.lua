@@ -73,9 +73,9 @@ function Xlib:MakeWindow(settings)
     
 
     UIListLayout_L:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabL.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_L.AbsoluteContentSize.Y)
+        TabL.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_L.AbsoluteContentSize.Y + 20)
     end)
-
+    
     local TabR = Instance.new("Frame")
     TabR.Name = "TabR"
     TabR.Parent = MainFrame
@@ -198,7 +198,7 @@ function Xlib:MakeWindow(settings)
                         
         -- อัปเดตข้อความใน Tabs
         for _, sw in ipairs(Tabs) do
-            sw.TabFrame.Text = string.rep("    ", 2) .. (currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th)
+            sw.TabFrame.Text = string.rep("     ", 2) .. (currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th)
         end
         
         -- อัปเดตข้อความใน Sections
@@ -451,7 +451,7 @@ function Xlib:MakeTab(settings)
     TabFrame.Position = UDim2.new(0, 0, 0, #settings.Parent.TabL:GetChildren() * 25)
     TabFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     TabFrame.TextColor3 = Color3.fromRGB(150, 150, 150)
-    TabFrame.Text = string.rep("    ", 2) .. (currentLanguage == "Eng" and settings.Name_Eng or settings.Name_Th) 
+    TabFrame.Text = string.rep("     ", 2) .. (currentLanguage == "Eng" and settings.Name_Eng or settings.Name_Th) 
     TabFrame.TextSize = 16
     TabFrame.TextXAlignment = Enum.TextXAlignment.Left
     TabFrame.Font = Enum.Font.GothamBold
@@ -462,7 +462,7 @@ function Xlib:MakeTab(settings)
     Icon.Name = "Icon"
     Icon.Parent = TabFrame
     Icon.Size = UDim2.new(0, 16, 0, 16)
-    Icon.Position = UDim2.new(0, 5, 0.5, -8)
+    Icon.Position = UDim2.new(0, 15, 0.5, -8)
     Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
     Icon.BackgroundTransparency = 1
     Icon.Image = settings.Icon or "rbxassetid://4483345998"
@@ -491,12 +491,13 @@ function Xlib:MakeTab(settings)
     UIPadding.PaddingTop = UDim.new(0, 10)
     
     UIListLayout_R:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        FrameFunction.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_R.AbsoluteContentSize.Y)
+        FrameFunction.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_R.AbsoluteContentSize.Y + 20)  -- Add 20 units for the buffer
     end)
+    
     
     TabFrame.MouseButton1Click:Connect(function()
         for _, child in pairs(settings.Parent.TabR:GetChildren()) do
-            if child:IsA("Frame") then
+            if child:IsA("ScrollingFrame") then
                 child.Visible = false
             end
         end
@@ -521,8 +522,6 @@ function Xlib:MakeTab(settings)
         FrameFunction = FrameFunction
     }
 end
-
-local TweenService = game:GetService("TweenService")
 
 function Xlib:MakeSection(settings)
     local SectionFrame = Instance.new("Frame")
