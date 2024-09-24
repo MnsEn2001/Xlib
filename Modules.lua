@@ -3,6 +3,7 @@ local Xlib = {}
 local LG = {"Eng", "Thai"}
 local currentLanguageIndex = 1
 local currentLanguage = "Eng"
+local Windows = {}
 local Tabs = {}
 local Sections = {}
 local Buttons = {}
@@ -10,6 +11,9 @@ local Toggles = {}
 local Dropdowns = {}
 local Sliders = {}
 local TextBoxes = {}
+
+
+local TweenService = game:GetService("TweenService")
 
 function Xlib:MakeWindow(settings)
     local ScreenGui = Instance.new("ScreenGui")
@@ -93,27 +97,95 @@ function Xlib:MakeWindow(settings)
     local UIPadding = Instance.new("UIPadding")
     UIPadding.Parent = TabR
     UIPadding.PaddingTop = UDim.new(0, 10)
+    
+    local Description = Instance.new("TextLabel")
+    Description.Name = "Description"
+    Description.Parent = TabR
+    Description.Size = UDim2.new(1, 0, 0, 230) -- ปรับขนาดให้เหมาะสม
+    Description.Position = UDim2.new(0, 0, 0, 20) -- ห่างจากด้านบนลงมา 10 หน่วย
+    Description.Text = currentLanguage == "Eng" and
+                    "Welcome to Script XHub\n\n" ..
+                    "If you are interested in purchasing premium scripts\n" ..
+                    "you can join our Discord XHub.\n\n" .. 
+                    "Discord Group : https://discord.gg/StxhWJE4pb"
+                or
+                    "ยินดีต้อนรับสู่ สคริปต์ XHub\n\n" ..
+                    "หากคุณสนใจในการซื้อสคริปต์พรีเมียม\n" ..
+                    "คุณสามารถเข้าร่วม Discord XHub ของเราได้\n\n" ..
+                    "กลุ่ม ดิสคอร์ด : https://discord.gg/StxhWJE4pb"
+                   
+    Description.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Description.TextSize = 16
+    Description.Font = Enum.Font.SourceSansBold
+    Description.TextWrapped = true
+    Description.BackgroundTransparency = 1
+    Description.TextYAlignment = Enum.TextYAlignment.Top
 
+    local CopyButton = Instance.new("TextButton")
+    CopyButton.Name = "CopyButton"
+    CopyButton.Parent = Description
+    CopyButton.Size = UDim2.new(0.5, 0, 0, 25)
+    CopyButton.Position = UDim2.new(0.5, 10, 1, -20) -- กำหนดให้ห่างจากด้านล่างขึ้นมา 10 หน่วย
+    CopyButton.AnchorPoint = Vector2.new(0.5, 1) -- ยึดตำแหน่งกึ่งกลางด้านล่าง
+    CopyButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CopyButton.Text = currentLanguage == "Eng" and
+                    "Copy link Discord"
+                or
+                    "คักลอกลิ้งค์ ดิสคอร์ด"
+                    
+    CopyButton.TextSize = 16
+    CopyButton.Font = Enum.Font.GothamBold
+    CopyButton.BackgroundTransparency = 0.8
+
+    local Discord_Icon = Instance.new("ImageLabel")
+    Discord_Icon.Name = "Icon"
+    Discord_Icon.Parent = CopyButton
+    Discord_Icon.Size = UDim2.new(0, 16, 0, 16) -- ขนาดของไอคอน
+    Discord_Icon.Position = UDim2.new(0.5, -77, 0.5, 0) -- ตำแหน่งให้อยู่ตรงกลาง
+    Discord_Icon.AnchorPoint = Vector2.new(0.5, 0.5) -- ยึดจุดกลางของไอคอน
+    Discord_Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    Discord_Icon.BackgroundTransparency = 1
+    Discord_Icon.Image = settings.Icon or "rbxassetid://4483345998"
+    
+    -- ลิงก์ Discord ที่ต้องการคัดลอก
+    local discordLink = "https://discord.gg/StxhWJE4pb"
+    
+    local function NotifyUser(title, text)
+        pcall(function()
+            game.StarterGui:SetCore("SendNotification", {
+                Title = title,
+                Text = text,
+                Duration = 5
+            })
+        end)
+    end
+
+    -- ฟังก์ชันการคัดลอกลิงค์เมื่อคลิกปุ่ม
+    CopyButton.MouseButton1Click:Connect(function()
+        setclipboard(discordLink)  -- คัดลอกลิงค์ไปยังคลิปบอร์ด
+        NotifyUser("Copied to Clipboard", discordLink)
+    end)
+    
     local Language = Instance.new("TextButton")
     Language.Name = "Language"
     Language.Parent = TitleBar
-    Language.Size = UDim2.new(0, 25, 0, 25)
+    Language.Size = UDim2.new(0, 40, 0, 35)
     Language.Position = UDim2.new(1, -100, 0, 18)
     Language.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
     Language.BackgroundTransparency = 1
     Language.BorderSizePixel = 0
-    Language.Text = LG[currentLanguageIndex]
+    Language.Text = "      " .. LG[currentLanguageIndex]
     Language.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Language.TextScaled = true
-    Language.TextSize = 24
+    Language.TextSize = 16
     Language.Font = Enum.Font.SourceSansBold
     Language.AnchorPoint = Vector2.new(1, 0.5)
     
     local Icon = Instance.new("ImageLabel")
     Icon.Name = "Icon"
     Icon.Parent = TitleBar
-    Icon.Size = UDim2.new(0, 16, 0, 16)
-    Icon.Position = UDim2.new(1, -145, 0, 6)
+    Icon.Size = UDim2.new(0, 14, 0, 14)
+    Icon.Position = UDim2.new(1, -140, 0, 6)
     Icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
     Icon.BackgroundTransparency = 1
     Icon.Image = "rbxassetid://7733965249"
@@ -121,24 +193,45 @@ function Xlib:MakeWindow(settings)
     local function switchLanguage()
         currentLanguageIndex = currentLanguageIndex == 1 and 2 or 1
         currentLanguage = LG[currentLanguageIndex]
-        Language.Text = LG[currentLanguageIndex]
-
+        Language.Text = "      " .. LG[currentLanguageIndex]
+        
+        Description.Text = currentLanguageIndex == 1 and 
+                        "Welcome to Script XHub\n\n" ..
+                        "If you are interested in purchasing premium scripts\n" ..
+                        "you can join our Discord XHub.\n\n" .. 
+                        "Discord Group : https://discord.gg/StxhWJE4pb"
+                    or
+                        "ยินดีต้อนรับสู่ สคริปต์ XHub\n\n" ..
+                        "หากคุณสนใจในการซื้อสคริปต์พรีเมียม\n" ..
+                        "คุณสามารถเข้าร่วม Discord XHub ของเราได้\n\n" ..
+                        "กลุ่ม ดิสคอร์ด : https://discord.gg/StxhWJE4pb"
+                        
+        CopyButton.Text = currentLanguageIndex == 1 and 
+                        "Copy link Discord"
+                    or
+                        "คักลอกลิ้งค์ ดิสคอร์ด"
+                        
+        -- อัปเดตข้อความใน Tabs
         for _, sw in ipairs(Tabs) do
             sw.TabFrame.Text = string.rep("    ", 2) .. (currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th)
         end
         
+        -- อัปเดตข้อความใน Sections
         for _, sw in ipairs(Sections) do
             sw.Section.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th
         end
         
+        -- อัปเดตข้อความใน Buttons
         for _, sw in ipairs(Buttons) do
             sw.Button.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th
         end
-
+    
+        -- อัปเดตข้อความใน Toggles
         for _, sw in ipairs(Toggles) do
             sw.Toggle.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th
         end
-
+    
+        -- อัปเดตข้อความใน Dropdowns
         for _, sw in ipairs(Dropdowns) do
             if sw.value then
                 local selectedIndex = table.find(sw.settings.Options_Eng, sw.value)
@@ -152,36 +245,78 @@ function Xlib:MakeWindow(settings)
             end
         end
         
+        -- อัปเดตข้อความใน Sliders
         for _, sw in ipairs(Sliders) do
-            sw.SliderTitle.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th  -- อัปเดต SliderTitle ตามภาษา
+            sw.SliderTitle.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th
         end
         
+        -- อัปเดตข้อความใน TextBoxes
         for _, sw in ipairs(TextBoxes) do
-            sw.TextBoxTitle.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th  -- อัปเดต SliderTitle ตามภาษา
+            sw.TextBoxTitle.Text = currentLanguage == "Eng" and sw.settings.Name_Eng or sw.settings.Name_Th
         end
     end
-
+    
     Language.MouseButton1Click:Connect(switchLanguage)
 
     local MinimizeButton = Instance.new("ImageButton")
     MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Parent = TitleBar
-    MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
+    MinimizeButton.Size = UDim2.new(0, 30, 0, 35)  -- กรอบขนาดเดิม
     MinimizeButton.Position = UDim2.new(1, -40, 0, 16)
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
     MinimizeButton.BackgroundTransparency = 1
-    MinimizeButton.Image = "rbxassetid://7734051594"
     MinimizeButton.AnchorPoint = Vector2.new(1, 0.5)
-
+    
+    -- สร้าง ImageLabel สำหรับไอคอนใน MinimizeButton
+    local MinimizeIcon = Instance.new("ImageLabel")
+    MinimizeIcon.Name = "MinimizeIcon"
+    MinimizeIcon.Parent = MinimizeButton
+    MinimizeIcon.Size = UDim2.new(0, 25, 0, 25)  -- ไอคอนขนาด 25x25
+    MinimizeIcon.Position = UDim2.new(0.5, -12.5, 0.5, -12.5)  -- ศูนย์กลางของไอคอน
+    MinimizeIcon.Image = "rbxassetid://7734000129"
+    MinimizeIcon.BackgroundTransparency = 1  -- ซ่อนพื้นหลังของไอคอน
+    
+    local images_MinimizeButton = {
+        "rbxassetid://7734000129",
+        "rbxassetid://7734006080",
+        "rbxassetid://7734006080",
+        "rbxassetid://7734000129",
+    }
+    
+    local currentMinimizeImageIndex = 1
+    
+    local function toggleIcon_MinimizeButton()
+        while true do
+            MinimizeIcon.Image = images_MinimizeButton[currentMinimizeImageIndex]
+            
+            wait(0.5)
+    
+            currentMinimizeImageIndex = currentMinimizeImageIndex + 1
+            if currentMinimizeImageIndex > #images_MinimizeButton then
+                currentMinimizeImageIndex = 1
+            end
+        end
+    end
+    
+    spawn(toggleIcon_MinimizeButton)
+    
+    -- สำหรับ CloseButton
     local CloseButton = Instance.new("ImageButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = TitleBar
-    CloseButton.Size = UDim2.new(0, 25, 0, 25)
+    CloseButton.Size = UDim2.new(0, 30, 0, 35)  -- กรอบขนาดเดิม
     CloseButton.Position = UDim2.new(1, -5, 0, 16)
-    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     CloseButton.BackgroundTransparency = 1
-    CloseButton.Image = "rbxassetid://7743878857"
     CloseButton.AnchorPoint = Vector2.new(1, 0.5)
+    
+    -- สร้าง ImageLabel สำหรับไอคอนใน CloseButton
+    local CloseIcon = Instance.new("ImageLabel")
+    CloseIcon.Name = "CloseIcon"
+    CloseIcon.Parent = CloseButton
+    CloseIcon.Size = UDim2.new(0, 25, 0, 25)  -- ไอคอนขนาด 25x25
+    CloseIcon.Position = UDim2.new(0.5, -12.5, 0.5, -12.5)  -- ศูนย์กลางของไอคอน
+    CloseIcon.Image = "rbxassetid://7743878857"
+    CloseIcon.BackgroundTransparency = 1  -- ซ่อนพื้นหลังของไอคอน
+    
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
@@ -310,16 +445,17 @@ function Xlib:MakeWindow(settings)
             onScreenTap()
         end
     end)
-
+    
+    table.insert(Windows, {MainFrame = MainFrame, Language = Language, TabL = TabL, TabR = TabR, Description = Description, settings = settings})
+    
     return {
         MainFrame = MainFrame,
         Language = Language,
         TabL = TabL,
-        TabR = TabR
+        TabR = TabR,
+        Description = Description
     }
 end
-
-return Xlib
 
 local selectedTab = nil
 function Xlib:MakeTab(settings)
@@ -360,7 +496,8 @@ function Xlib:MakeTab(settings)
             end
         end
         FrameFunction.Visible = true
-
+        settings.Parent.Description.Visible = false
+        
         if selectedTab then
             selectedTab.TabFrame.TextColor3 = Color3.fromRGB(150, 150, 150)
             selectedTab.Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
@@ -379,6 +516,8 @@ function Xlib:MakeTab(settings)
         FrameFunction = FrameFunction
     }
 end
+
+local TweenService = game:GetService("TweenService")
 
 function Xlib:MakeSection(settings)
     local SectionFrame = Instance.new("Frame")
@@ -423,7 +562,7 @@ function Xlib:MakeSection(settings)
     Icon.Position = UDim2.new(1, -10, 0.5, 0)
     Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
     Icon.BackgroundTransparency = 1
-    Icon.Image = "rbxassetid://7734006080"
+    Icon.Image = "rbxassetid://7733955969"
 
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 5)
@@ -431,10 +570,41 @@ function Xlib:MakeSection(settings)
 
     table.insert(Sections, {Section = Section, settings = settings})
 
+    local images = {
+        "rbxassetid://7733674820",
+        "rbxassetid://7733674820",
+        "rbxassetid://7733674589",
+        "rbxassetid://7733674589",
+        "rbxassetid://7733674731",
+        "rbxassetid://7733674731",
+        "rbxassetid://7733674503",
+        "rbxassetid://7733674503",
+        "rbxassetid://7733674731",
+        "rbxassetid://7733674731",
+        "rbxassetid://7733674589",
+        "rbxassetid://7733674589",
+    }
+    
+    local currentImageIndex = 1
+    local function toggleIcon()
+        while true do
+            Icon.Image = images[currentImageIndex]
+            
+            wait(0.3)
+            
+            currentImageIndex = currentImageIndex + 1
+            if currentImageIndex > #images then
+                currentImageIndex = 1
+            end
+        end
+    end
+    spawn(toggleIcon)
+
     return {
         Section = Section
     }
 end
+
 
 function Xlib:MakeButton(settings)
     local Button = Instance.new("TextButton")
@@ -469,7 +639,7 @@ function Xlib:MakeButton(settings)
     Icon.Position = UDim2.new(1, -10, 0.5, 0)
     Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
     Icon.BackgroundTransparency = 1
-    Icon.Image = "rbxassetid://7733955906"
+    Icon.Image = "rbxassetid://3944703587"
 
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 5)
@@ -511,36 +681,44 @@ function Xlib:MakeToggle(settings)
         uiListLayout.Padding = UDim.new(0, 5)
     end
     
-    local Icon = Instance.new("ImageLabel")
-    Icon.Name = "Icon"
-    Icon.Parent = Toggle
-    Icon.Size = UDim2.new(0, 16, 0, 16)
-    Icon.AnchorPoint = Vector2.new(1, 0.5)
-    Icon.Position = UDim2.new(1, -10, 0.5, 0)
-    Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
-    Icon.BackgroundTransparency = 1
-    Icon.Image = "rbxassetid://7734091286" -- ไอคอนเริ่มต้น
-
-    local Stroke = Instance.new("UIStroke")
-    Stroke.Parent = Icon
-    Stroke.Thickness = 0
-    Stroke.Color = Color3.fromRGB(255, 255, 255)
-    Stroke.Transparency = 0.5
-
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 5)
     Corner.Parent = Toggle
     
+    -- Background for the icon
+    local IconBackground = Instance.new("Frame")
+    IconBackground.Name = "IconBackground"
+    IconBackground.Parent = Toggle
+    IconBackground.Size = UDim2.new(0, 20, 0, 20)  -- Size of the background
+    IconBackground.AnchorPoint = Vector2.new(1, 0.5)
+    IconBackground.Position = UDim2.new(1, -10, 0.5, 0)
+    IconBackground.BackgroundColor3 = ToggleValue and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    IconBackground.BorderSizePixel = 0
+    IconBackground.BackgroundTransparency = 0.25
+
+    local Icon = Instance.new("ImageLabel")
+    Icon.Name = "Icon"
+    Icon.Parent = IconBackground
+    Icon.Size = UDim2.new(1, 0, 1, 0)  -- Make it fill the background
+    Icon.AnchorPoint = Vector2.new(0.5, 0.5)
+    Icon.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Center the icon
+    Icon.Image = "rbxassetid://7743878857" -- Default icon
+    Icon.BackgroundTransparency = 1  -- Make icon background transparent
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 3)
+    Corner.Parent = IconBackground
+    
     local ToggleValue = settings.Default or false
-    Icon.Image = ToggleValue and "rbxassetid://7743873539" or "rbxassetid://7734091286"
+    Icon.Image = ToggleValue and "rbxassetid://7733715400" or "rbxassetid://7743878857"
+    IconBackground.BackgroundColor3 = ToggleValue and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    settings.Callback(ToggleValue)
 
     Toggle.MouseButton1Click:Connect(function()
         ToggleValue = not ToggleValue
-        Icon.Image = ToggleValue and "rbxassetid://7743873539" or "rbxassetid://7734091286"
-        
-        if ToggleValue then
-            settings.Callback(ToggleValue)
-        end
+        Icon.Image = ToggleValue and "rbxassetid://7733715400" or "rbxassetid://7743878857"
+        IconBackground.BackgroundColor3 = ToggleValue and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+        settings.Callback(ToggleValue)
     end)
 
     table.insert(Toggles, {Toggle = Toggle, settings = settings})
@@ -549,6 +727,7 @@ function Xlib:MakeToggle(settings)
         Toggle = Toggle
     }
 end
+
 
 function Xlib:MakeDropdown(settings)
     local Dropdown = Instance.new("TextButton")
@@ -705,12 +884,12 @@ function Xlib:MakeSlider(settings)
 
     local Knob = Instance.new("ImageButton")
     Knob.Name = "Knob"
-    Knob.Image = "rbxassetid://7733723321" -- ไอคอนเริ่มต้น
+    Knob.Image = "rbxassetid://7733749837" -- ไอคอนเริ่มต้น
     Knob.Parent = Line
     Knob.Size = UDim2.new(0, 25, 0, 25)
     Knob.AnchorPoint = Vector2.new(0, 0.15) -- ตั้งให้กึ่งกลาง
     Knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Knob.BackgroundTransparency = 0.8
+    Knob.BackgroundTransparency = 1
     Knob.ImageColor3 = Color3.fromRGB(255, 255, 255)
     
     local Corner = Instance.new("UICorner")
@@ -751,7 +930,7 @@ function Xlib:MakeSlider(settings)
         local isDragging = true
     
         -- ตั้งค่าไอคอนเริ่มต้นเมื่อเริ่มลาก
-        Knob.Image = "rbxassetid://7733723321"
+        Knob.Image = "rbxassetid://7733749837"
 
         local function updateKnobPosition(inputPosition)
             local newX = math.clamp(inputPosition.X - Line.AbsolutePosition.X, 0, Line.AbsoluteSize.X)
@@ -786,7 +965,7 @@ function Xlib:MakeSlider(settings)
                 mouseMove:Disconnect()
                 mouseUp:Disconnect()
                 -- เมื่อหยุดลาก เปลี่ยนกลับเป็นไอคอนเริ่มต้น
-                Knob.Image = "rbxassetid://7733723321"
+                Knob.Image = "rbxassetid://7733749837"
             end
         end)
     end)
@@ -879,3 +1058,5 @@ function Xlib:MakeTextbox(settings)
         TextBoxTitle = TextBoxTitle
     }
 end
+
+return Xlib
