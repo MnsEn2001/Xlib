@@ -3,7 +3,6 @@ local Xlib = {}
 local LG = {"Eng", "Thai"}
 local currentLanguageIndex = 1
 local currentLanguage = "Eng"
-
 local Windows = {}
 local Tabs = {}
 local Sections = {}
@@ -12,6 +11,7 @@ local Toggles = {}
 local Dropdowns = {}
 local Sliders = {}
 local TextBoxes = {}
+
 
 local TweenService = game:GetService("TweenService")
 
@@ -24,7 +24,7 @@ function Xlib:MakeWindow(settings)
     MainFrame.Name = settings.Name or "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainFrame.Position = UDim2.new(0.5, 0, 0.5, -25)
     MainFrame.Size = UDim2.new(0.7, 0, 0.7, 0)
     MainFrame.BackgroundColor3 = Color3.fromRGB(10, 30, 30)
     MainFrame.BorderSizePixel = 0
@@ -52,7 +52,7 @@ function Xlib:MakeWindow(settings)
     local TabL = Instance.new("ScrollingFrame")
     TabL.Name = "TabL"
     TabL.Parent = MainFrame
-    TabL.Size = UDim2.new(0.3, 0, 1, -20)
+    TabL.Size = UDim2.new(0.3, 0, 1, -45)
     TabL.Position = UDim2.new(0, 0, 0, 35)
     TabL.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     TabL.BorderSizePixel = 0
@@ -274,7 +274,7 @@ function Xlib:MakeWindow(settings)
         while true do
             MinimizeIcon.Image = images_MinimizeButton[currentMinimizeImageIndex]
             
-            wait(0.5)
+            wait(1)
     
             currentMinimizeImageIndex = currentMinimizeImageIndex + 1
             if currentMinimizeImageIndex > #images_MinimizeButton then
@@ -306,12 +306,59 @@ function Xlib:MakeWindow(settings)
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
+    
+    local UnderBar = Instance.new("Frame")
+    UnderBar.Name = "UnderBar"
+    UnderBar.Parent = MainFrame
+    UnderBar.Size = UDim2.new(0.3, 0, 0, 30) -- Full width of MainFrame
+    UnderBar.Position = UDim2.new(0, 0, 1, -15) -- Positioned at the bottom
+    UnderBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    UnderBar.BorderSizePixel = 0
+    
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer -- ดึงข้อมูลผู้เล่นปัจจุบัน
+    
+    -- รูปโปรไฟล์
+    local ProfileImage = Instance.new("ImageLabel")
+    ProfileImage.Name = "ProfileImage"
+    ProfileImage.Parent = UnderBar
+    ProfileImage.Size = UDim2.new(0, 40, 0, 40)
+    ProfileImage.AnchorPoint = Vector2.new(0.5, 0.5) -- Adjust anchor point to center
+    ProfileImage.Position = UDim2.new(0.15, 0, 0.5, -5) -- Centered horizontally (15% from left) and vertically
+    ProfileImage.BackgroundTransparency = 1
+    
+    -- ชื่อผู้เล่น
+    local PlayerNameLabel = Instance.new("TextLabel")
+    PlayerNameLabel.Name = "PlayerNameLabel"
+    PlayerNameLabel.Parent = UnderBar
+    PlayerNameLabel.Size = UDim2.new(0, 100, 0, 30)
+    PlayerNameLabel.AnchorPoint = Vector2.new(0, 0.5) -- Center vertically
+    PlayerNameLabel.Position = UDim2.new(0.3, 0, 0.5, 0) -- Position it to the right of ProfileImage
+    PlayerNameLabel.BackgroundTransparency = 1
+    PlayerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PlayerNameLabel.TextSize = 16
+    PlayerNameLabel.Font = Enum.Font.SourceSansBold
+    PlayerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 
+    -- ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้
+    local function UpdateUserInfo()
+        local userId = player.UserId
+        local thumbType = Enum.ThumbnailType.HeadShot
+        local thumbSize = Enum.ThumbnailSize.Size100x100
+        local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+        if isReady then
+            ProfileImage.Image = content
+        end
+        PlayerNameLabel.Text = " :  " .. player.Name
+    end
+    UpdateUserInfo()
+    
+    
     local MinimizedIcon = Instance.new("ImageButton")
     MinimizedIcon.Name = "MinimizedIcon"
     MinimizedIcon.Parent = ScreenGui
     MinimizedIcon.Size = UDim2.new(0, 30, 0, 30)
-    MinimizedIcon.Position = UDim2.new(0, 10, 0, 80)
+    MinimizedIcon.Position = UDim2.new(0, 10, 0, 30)
     MinimizedIcon.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     MinimizedIcon.BackgroundTransparency = 1
     MinimizedIcon.Image = settings.Icon or "rbxassetid://7743871575"
@@ -404,8 +451,8 @@ function Xlib:MakeWindow(settings)
         end
     end)
     
-    local startPosition = UDim2.new(0.5, 0, 0.5, 0)
-    local minimizedIconStartPosition = UDim2.new(0, 10, 0, 10)
+    local startPosition = UDim2.new(0.5, 0, 0.5, -25)
+    local minimizedIconStartPosition = UDim2.new(0, 10, 0, 30)
     
     local clickInterval = 0.2
     local tapCount = 0
@@ -516,7 +563,7 @@ function Xlib:MakeTab(settings)
         selectedTab = {TabFrame = TabFrame, Icon = Icon}
     end)
 
-    table.insert(Tabs, {TabFrame = TabFrame, settings = settings})
+    table.insert(Tabs, {TabFrame = TabFrame, FrameFunction = FrameFunction, settings = settings})
 
     return {
         TabFrame = TabFrame,
