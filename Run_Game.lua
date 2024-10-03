@@ -2,9 +2,6 @@
 
 local HttpService = game:GetService("HttpService")
 
--- Assume Key is set by User_Run.lua
-_G.Key = "{_G.Key}" -- This line can be removed, as the key will be set externally
-
 local function Run_Script(Key)
     local url = "http://localhost:3000/Run" -- เปลี่ยน URL เป็น IP ของโฮสต์
     local success, response = pcall(function()
@@ -34,5 +31,5 @@ local function Run_Script(Key)
     end
 end
 
--- Assuming Key is passed from User_Run.lua before calling Run_Script
+-- ใช้ _G.Key ที่ถูกกำหนดในไฟล์อื่น เช่น User_Run.lua
 Run_Script(_G.Key)
