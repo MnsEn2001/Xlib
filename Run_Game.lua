@@ -1,3 +1,5 @@
+local HttpService = game:GetService("HttpService")
+
 local function Run_Script(Key)
     local url = "http://37.114.46.39:6191/Run"
     local success, response = pcall(function()
@@ -26,3 +28,7 @@ local function Run_Script(Key)
         warn("Failed to load script: " .. tostring(response))
     end
 end
+
+
+-- ใช้ _G.Key ที่ถูกกำหนดในไฟล์อื่น เช่น User_Run.lua
+Run_Script(_G.Key)
