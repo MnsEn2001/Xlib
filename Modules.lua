@@ -9,9 +9,9 @@ local Sections = {}
 local Buttons = {}
 local Toggles = {}
 local Dropdowns = {}
+local Multiples = {}
 local Sliders = {}
 local TextBoxes = {}
-
 
 local TweenService = game:GetService("TweenService")
 
@@ -229,6 +229,33 @@ function Xlib:MakeWindow(settings)
             for i, optionButton in ipairs(sw.OptionButtons) do
                 optionButton.Text = currentLanguage == "Eng" and sw.settings.Options_Eng[i] or sw.settings.Options_Th[i]
             end
+        end
+
+        -- อัปเดตชื่อปุ่มในแต่ละ Multiple
+        for _, sw in ipairs(Multiples) do
+            -- ตรวจสอบว่ามีการเลือก option หรือไม่
+            if #sw.selectedOptions > 0 then
+                sw.Multiples.Text = ""  -- ลบชื่อเริ่มต้นออก
+            else
+                sw.Multiples.Text = currentLanguageIndex == 1 and sw.settings.Name_Eng or sw.settings.Name_Th  -- แสดงชื่อเริ่มต้นถ้าไม่มีการเลือก
+            end
+            
+            for i, optionButton in ipairs(sw.OptionButtons) do
+                optionButton.Text = currentLanguageIndex == 1 and sw.settings.Options_Eng[i] or sw.settings.Options_Th[i]
+            end
+        
+            -- Update selected options to reflect the current language
+            local translatedOptions = {}
+            for _, selectedOption in ipairs(sw.selectedOptions) do
+                local selectedIndex = table.find(sw.settings.Options_Eng, selectedOption)
+                if selectedIndex then
+                    translatedOptions[#translatedOptions + 1] = currentLanguageIndex == 1 and selectedOption or sw.settings.Options_Th[selectedIndex]
+                end
+            end
+            
+            sw.SelectedTextLabel.Text = table.concat(translatedOptions, ", ")
+            sw.SelectedTextLabel.Size = UDim2.new(0, sw.SelectedTextLabel.TextBounds.X, 1, 0)
+            sw.SelectedTextFrame.CanvasSize = UDim2.new(0, sw.SelectedTextLabel.TextBounds.X, 1, 0)
         end
         
         -- อัปเดตข้อความใน Sliders
@@ -780,7 +807,6 @@ function Xlib:MakeToggle(settings)
     }
 end
 
-
 function Xlib:MakeDropdown(settings)
     local Dropdown = Instance.new("TextButton")
     Dropdown.Name = "Dropdown"
@@ -847,7 +873,6 @@ function Xlib:MakeDropdown(settings)
         DropdownList.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 20)  -- Add 20 units for the buffer
     end)
     
-
     local OptionButtons = {}
     local value = nil
 
@@ -890,6 +915,155 @@ function Xlib:MakeDropdown(settings)
 
     return {
         Dropdown = Dropdown
+    }
+end
+
+function Xlib:MakeMultiple(settings)
+    local Multiple = Instance.new("TextButton")
+    Multiple.Name = "Multiple"
+    Multiple.Parent = settings.Parent.FrameFunction
+    Multiple.Size = UDim2.new(1, -15, 0, 30)
+    Multiple.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Multiple.BorderSizePixel = 1
+    Multiple.BorderColor3 = Color3.fromRGB(100, 100, 100)
+    Multiple.TextSize = 16
+    Multiple.Font = Enum.Font.Gotham
+    Multiple.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Multiple.Text = currentLanguageIndex == 1 and settings.Name_Eng or settings.Name_Th
+    Multiple.LayoutOrder = #settings.Parent.FrameFunction:GetChildren() + 1
+
+    local MultipleValue = settings.Default or false
+
+    local Icon = Instance.new("ImageButton")
+    Icon.Name = "Icon"
+    Icon.Parent = Multiple
+    Icon.Size = UDim2.new(0, 16, 0, 16)
+    Icon.AnchorPoint = Vector2.new(1, 0.5)
+    Icon.Position = UDim2.new(1, -10, 0.5, 0)
+    Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
+    Icon.BackgroundTransparency = 1
+    Icon.Image = MultipleValue and "rbxassetid://7733919605" or "rbxassetid://7733717447"
+
+    local SelectedTextFrame = Instance.new("ScrollingFrame")
+    SelectedTextFrame.Name = "SelectedTextFrame"
+    SelectedTextFrame.Parent = Multiple
+    SelectedTextFrame.Size = UDim2.new(1, -50, 1, 0)
+    SelectedTextFrame.Position = UDim2.new(0, 10, 0, 0)
+    SelectedTextFrame.BackgroundTransparency = 1
+    SelectedTextFrame.BorderSizePixel = 0
+    SelectedTextFrame.ScrollBarThickness = 0
+    SelectedTextFrame.ClipsDescendants = true
+    SelectedTextFrame.ScrollingDirection = Enum.ScrollingDirection.X
+
+    local SelectedTextLabel = Instance.new("TextLabel")
+    SelectedTextLabel.Name = "SelectedTextLabel"
+    SelectedTextLabel.Parent = SelectedTextFrame
+    SelectedTextLabel.Size = UDim2.new(0, 0, 1, 0)
+    SelectedTextLabel.BackgroundTransparency = 1
+    SelectedTextLabel.TextSize = 16
+    SelectedTextLabel.Font = Enum.Font.Gotham
+    SelectedTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SelectedTextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local MultipleList = Instance.new("ScrollingFrame")
+    MultipleList.Name = "MultipleList"
+    MultipleList.Parent = settings.Parent.FrameFunction
+    MultipleList.Size = UDim2.new(1, -80, 0, 100)
+    MultipleList.Position = UDim2.new(0, 0, 0, 0)
+    MultipleList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    MultipleList.Visible = false
+    MultipleList.ScrollBarThickness = 3
+    MultipleList.LayoutOrder = #settings.Parent.FrameFunction:GetChildren() + 1
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = MultipleList
+    UIListLayout.FillDirection = Enum.FillDirection.Vertical
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
+
+    local selectedOptions = {}
+    local OptionButtons = {}
+
+    for i, option in ipairs(settings.Options_Eng) do
+        local OptionButton = Instance.new("TextButton")
+        OptionButton.Parent = MultipleList
+        OptionButton.Size = UDim2.new(1, -15, 0, 30)
+        OptionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        OptionButton.TextSize = 16
+        OptionButton.Font = Enum.Font.Gotham
+        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        OptionButton.BorderSizePixel = 0
+        OptionButton.Text = currentLanguageIndex == 1 and option or settings.Options_Th[i]
+
+        OptionButton.MouseButton1Click:Connect(function()
+            local index = table.find(selectedOptions, option)
+            if index then
+                table.remove(selectedOptions, index)
+            else
+                table.insert(selectedOptions, option)
+            end
+        
+            -- Update the selected option to reflect the current language
+            if currentLanguageIndex == 1 then
+                settings.Callback(option)
+            else
+                local selectedIndex = table.find(settings.Options_Eng, option)
+                settings.Callback(settings.Options_Th[selectedIndex])  -- Call with Thai option
+            end
+        
+            -- Update the SelectedTextLabel based on the selectedOptions
+            local translatedOptions = {}
+            for _, selectedOption in ipairs(selectedOptions) do
+                local selectedIndex = table.find(settings.Options_Eng, selectedOption)
+                if selectedIndex then
+                    translatedOptions[#translatedOptions + 1] = currentLanguageIndex == 1 and selectedOption or settings.Options_Th[selectedIndex]
+                end
+            end
+        
+            -- Set the text of the SelectedTextLabel
+            SelectedTextLabel.Text = table.concat(translatedOptions, ", ")
+            SelectedTextLabel.Size = UDim2.new(0, SelectedTextLabel.TextBounds.X, 1, 0)
+            SelectedTextFrame.CanvasSize = UDim2.new(0, SelectedTextLabel.TextBounds.X, 1, 0)
+            
+            -- Hide the MultipleList and update the icon
+            MultipleList.Visible = false
+            MultipleValue = false
+            Icon.Image = "rbxassetid://7733717447"
+        
+            -- Update the Multiple text
+            if #selectedOptions > 0 then
+                Multiple.Text = ""  -- Remove the default name
+            else
+                Multiple.Text = currentLanguageIndex == 1 and settings.Name_Eng or settings.Name_Th  -- Show the default name if no options are selected
+            end
+        end)
+
+        table.insert(OptionButtons, OptionButton)
+    end
+
+    local function toggleMultipleList()
+        MultipleList.Visible = not MultipleList.Visible
+        if MultipleList.Visible then
+            MultipleList.Position = UDim2.new(0, 0, 0, Multiple.AbsolutePosition.Y + Multiple.Size.Y.Offset)
+        end
+    end
+
+    Multiple.MouseButton1Click:Connect(toggleMultipleList)
+
+    table.insert(Multiples, {
+        value = MultipleValue,
+        settings = settings,
+        Multiples = Multiple,
+        OptionButtons = OptionButtons,
+        selectedOptions = selectedOptions,
+        SelectedTextLabel = SelectedTextLabel,
+        SelectedTextFrame = SelectedTextFrame
+    })
+
+    return {
+        Multiple = Multiple
     }
 end
 
