@@ -1,9 +1,7 @@
 local HttpService = game:GetService("HttpService")
 
-local _G.Key = _G.Key
-local _G.Version = _G.Version
-
-local function Run_Script(Key)
+-- ฟังก์ชันสำหรับรันสคริปต์จาก URL
+local function Run_Script(Key, Version)
     local url = "http://37.114.46.139:7044/Run" -- เปลี่ยน URL เป็น IP ของโฮสต์
     local success, response = pcall(function()
         return game:HttpGet(url) -- ใช้ HttpGet เพื่อดึงข้อมูล
@@ -16,6 +14,9 @@ local function Run_Script(Key)
 
         if decodeSuccess and type(data) == "table" and data.script then
             local scriptContent = data.script -- คาดว่าข้อมูล JSON มีฟิลด์ `script`
+
+            -- สามารถใช้งาน Key และ Version ในการประมวลผลเพิ่มเติมหรือตรวจสอบได้ที่นี่
+            print("Running script with Key:", Key, "and Version:", Version)
 
             -- โหลดและรันสคริปต์ Lua โดยตรง
             local func, err = loadstring(scriptContent)
@@ -32,4 +33,5 @@ local function Run_Script(Key)
     end
 end
 
-Run_Script()
+-- เรียกใช้ฟังก์ชันและส่งค่าของ _G.Key และ _G.Version
+Run_Script(_G.Key, _G.Version)  -- ส่งทั้ง _G.Key และ _G.Version
