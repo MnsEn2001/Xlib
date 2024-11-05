@@ -1,5 +1,8 @@
 local HttpService = game:GetService("HttpService")
 
+local _G.Key = _G.Key
+local _G.Version = _G.Version
+
 local function Run_Script(Key)
     local url = "http://37.114.46.139:7044/Run" -- เปลี่ยน URL เป็น IP ของโฮสต์
     local success, response = pcall(function()
@@ -29,4 +32,4 @@ local function Run_Script(Key)
     end
 end
 
-Run_Script(_G.Key, _G.Version)
+Run_Script()
