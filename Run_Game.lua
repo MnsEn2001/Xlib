@@ -29,5 +29,4 @@ local function Run_Script(Key)
     end
 end
 
--- ใช้ _G.Key ที่ถูกกำหนดในไฟล์อื่น เช่น User_Run.lua
-Run_Script(_G.Key)
+Run_Script(_G.Key, _G.Version)
