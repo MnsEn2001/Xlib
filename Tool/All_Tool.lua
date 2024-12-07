@@ -37,7 +37,7 @@ local function loadXlibModule()
 
     -- โหลดโมดูล Xlib ใหม่จาก URL
     local success, response = pcall(function()
-        return game:HttpGet('http://45.141.27.98:7044/Script-Xlib')
+        return game:HttpGet('http://37.114.46.139:7044/Script-Xlib')
     end)
 
     if success then
