@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 
 -- ฟังก์ชันสำหรับรันสคริปต์จาก URL
 local function Run_Script(Key, Version)
-    local url = "http://37.114.46.139:7044/Run" -- เปลี่ยน URL เป็น IP ของโฮสต์
+    local url = "http://45.141.27.176:7044/Run" -- เปลี่ยน URL เป็น IP ของโฮสต์
     local success, response = pcall(function()
         return game:HttpGet(url) -- ใช้ HttpGet เพื่อดึงข้อมูล
     end)
