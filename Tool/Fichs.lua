@@ -3456,7 +3456,7 @@ Main = Tap.General:AddSection('ทั่วไป') do
 	Toggle(Main, "ตกปลาอัตโนมัติ","", "Farm Fish")
 	Toggle(Main, "วาปไปที่เลือกไว้","", "To Pos Stand")
 	Main:AddButton({
-		Title = "เลือกำแหน่งนี้",
+		Title = "เลือกตำแหน่งนี้",
 		Callback = function()
 			Config['SelectPositionStand'] = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
 			SelectPosition:SetTitle("ตำแหน่ง : "..tostring(math.floor(LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position.X)).." X "..tostring(math.floor(LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position.Y)).." Y "..tostring(math.floor(LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position.Z)).." Z")
