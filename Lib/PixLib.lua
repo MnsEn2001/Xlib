@@ -817,7 +817,12 @@ function PixelLib:CreateGui(config)
         local tab = tabConfig or {}
         tab.Name = tab.Name or "Tab"
         tab.Icon = tab.Icon or ""
-        dropdownIndex = 0 -- Reset dropdownIndex for this tab to isolate dropdowns
+        dropdownIndex = 0 -- Reset dropdownIndex for this tab
+    
+        -- Create a unique DropdownPages folder for this tab
+        local tabDropdownPages = Instance.new("Folder")
+        tabDropdownPages.Name = "DropdownPages_" .. tab.Name
+        tabDropdownPages.Parent = DropdownContent
     
         local TabContent = Instance.new("ScrollingFrame")
         local ContentLayout = Instance.new("UIListLayout")
@@ -957,7 +962,7 @@ function PixelLib:CreateGui(config)
         end)
     
         local SectionControls = {}
-        local sectionIndex = 0
+        local sectionIndex = 0    
 
         function SectionControls:AddSection(title, collapsible)
             local sectionTitle = title or "Section"
@@ -1360,142 +1365,114 @@ function PixelLib:CreateGui(config)
                 return SliderButton
             end
 
-            function ElementControls:AddDropdown(config)
-                local dropdownConfig = config or {}
-                dropdownConfig.Name = dropdownConfig.Name or "Dropdown"
-                dropdownConfig.Options = dropdownConfig.Options or {}
-                dropdownConfig.Default = dropdownConfig.Default or ""
-                dropdownConfig.Callback = dropdownConfig.Callback or function() end
+            function SectionControls:AddDropdown(dropdownConfig)
+                local dropdown = dropdownConfig or {}
+                dropdown.Name = dropdown.Name or "Dropdown"
+                dropdown.Options = dropdown.Options or {"Option 1", "Option 2"}
+                dropdown.Default = dropdown.Default or dropdown.Options[1]
+                dropdown.Callback = dropdown.Callback or function() end
 
-                local DropdownMainFrame = Instance.new("Frame")
-                local DropdownCorner = Instance.new("UICorner")
-                local DropdownButton = Instance.new("TextButton")
+                local DropdownFrame = Instance.new("Frame")
                 local DropdownLabel = Instance.new("TextLabel")
-                local SelectedLabel = Instance.new("TextLabel")
-                local ArrowIcon = Instance.new("ImageLabel")
+                local DropdownButton = Instance.new("TextButton")
+                local DropdownCorner = Instance.new("UICorner")
+                local DropdownOverlay = Instance.new("Frame")
+                local DropdownContent = Instance.new("ScrollingFrame")
+                local DropdownListLayout = Instance.new("UIListLayout")
 
-                DropdownMainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                DropdownMainFrame.BackgroundTransparency = 0.95
-                DropdownMainFrame.BorderSizePixel = 0
-                DropdownMainFrame.Size = UDim2.new(1, 0, 0, 30)
-                DropdownMainFrame.Name = "DropdownMainFrame"
-                DropdownMainFrame.Parent = SectionContent
-
-                DropdownCorner.CornerRadius = UDim.new(0, 4)
-                DropdownCorner.Parent = DropdownMainFrame
-
-                DropdownButton.Font = Enum.Font.SourceSans
-                DropdownButton.Text = ""
-                DropdownButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-                DropdownButton.TextSize = 14
-                DropdownButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                DropdownButton.BackgroundTransparency = 1
-                DropdownButton.BorderSizePixel = 0
-                DropdownButton.Size = UDim2.new(1, 0, 1, 0)
-                DropdownButton.Name = "DropdownButton"
-                DropdownButton.Parent = DropdownMainFrame
+                DropdownFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownFrame.BackgroundTransparency = 0.92
+                DropdownFrame.BorderSizePixel = 0
+                DropdownFrame.Size = UDim2.new(1, 0, 0, 30)
+                DropdownFrame.Name = "DropdownFrame"
+                DropdownFrame.Parent = sectionContent
 
                 DropdownLabel.Font = Enum.Font.GothamBold
-                DropdownLabel.Text = dropdownConfig.Name
-                DropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                DropdownLabel.Text = dropdown.Name
+                DropdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
                 DropdownLabel.TextSize = 13
                 DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
                 DropdownLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                DropdownLabel.BackgroundTransparency = 1
+                DropdownLabel.BackgroundTransparency = 0.999
                 DropdownLabel.BorderSizePixel = 0
                 DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
                 DropdownLabel.Size = UDim2.new(0.5, 0, 1, 0)
                 DropdownLabel.Name = "DropdownLabel"
-                DropdownLabel.Parent = DropdownMainFrame
+                DropdownLabel.Parent = DropdownFrame
 
-                SelectedLabel.Font = Enum.Font.GothamBold
-                SelectedLabel.Text = dropdownConfig.Default
-                SelectedLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-                SelectedLabel.TextSize = 13
-                SelectedLabel.TextXAlignment = Enum.TextXAlignment.Right
-                SelectedLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                SelectedLabel.BackgroundTransparency = 1
-                SelectedLabel.BorderSizePixel = 0
-                SelectedLabel.Position = UDim2.new(0, 0, 0, 0)
-                SelectedLabel.Size = UDim2.new(1, -40, 1, 0)
-                SelectedLabel.Name = "SelectedLabel"
-                SelectedLabel.Parent = DropdownMainFrame
+                DropdownButton.Font = Enum.Font.GothamBold
+                DropdownButton.Text = dropdown.Default
+                DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownButton.TextSize = 13
+                DropdownButton.TextXAlignment = Enum.TextXAlignment.Right
+                DropdownButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownButton.BackgroundTransparency = 0.999
+                DropdownButton.BorderSizePixel = 0
+                DropdownButton.Position = UDim2.new(0.5, 0, 0, 0)
+                DropdownButton.Size = UDim2.new(0.5, -10, 1, 0)
+                DropdownButton.Name = "DropdownButton"
+                DropdownButton.Parent = DropdownFrame
 
-                ArrowIcon.Image = "rbxassetid://16851841101"
-                ArrowIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                ArrowIcon.BackgroundTransparency = 1
-                ArrowIcon.BorderSizePixel = 0
-                ArrowIcon.Position = UDim2.new(1, -25, 0.5, -8)
-                ArrowIcon.Size = UDim2.new(0, 16, 0, 16)
-                ArrowIcon.Rotation = -90
-                ArrowIcon.Name = "ArrowIcon"
-                ArrowIcon.Parent = DropdownMainFrame
+                DropdownCorner.CornerRadius = UDim.new(0, 4)
+                DropdownCorner.Parent = DropdownFrame
+
+                DropdownOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                DropdownOverlay.BackgroundTransparency = 1
+                DropdownOverlay.BorderSizePixel = 0
+                DropdownOverlay.Position = UDim2.new(0, 0, 0, 0)
+                DropdownOverlay.Size = UDim2.new(1, 0, 1, 0)
+                DropdownOverlay.Visible = false
+                DropdownOverlay.ZIndex = 100
+                DropdownOverlay.Name = "DropdownOverlay"
+                DropdownOverlay.Parent = MainFrame
+
+                DropdownContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownContent.BackgroundTransparency = 0.92
+                DropdownContent.BorderSizePixel = 0
+                DropdownContent.Position = UDim2.new(1, -8, 0.5, 0)
+                DropdownContent.Size = UDim2.new(0, 150, 0, 0)
+                DropdownContent.ScrollBarThickness = 0
+                DropdownContent.Name = "DropdownContent"
+                DropdownContent.Parent = DropdownOverlay
+
+                DropdownListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                DropdownListLayout.Parent = DropdownContent
 
                 local DropdownPage = Instance.new("Frame")
-                local OptionList = Instance.new("ScrollingFrame")
-                local OptionLayout = Instance.new("UIListLayout")
-
-                DropdownPage.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                DropdownPage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownPage.BackgroundTransparency = 0.999
                 DropdownPage.BorderSizePixel = 0
+                DropdownPage.Size = UDim2.new(1, 0, 0, 30)
                 DropdownPage.LayoutOrder = dropdownIndex
-                DropdownPage.Size = UDim2.new(1, 0, 1, 0)
-                DropdownPage.Name = "DropdownPage"
-                DropdownPage.Parent = DropdownPages
+                DropdownPage.Name = "DropdownPage_" .. dropdown.Name
+                DropdownPage.Parent = tabDropdownPages -- Use tab-specific DropdownPages
 
-                OptionList.CanvasSize = UDim2.new(0, 0, 0, 0)
-                OptionList.ScrollBarThickness = 0
-                OptionList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                OptionList.BackgroundTransparency = 1
-                OptionList.BorderSizePixel = 0
-                OptionList.Size = UDim2.new(1, 0, 1, 0)
-                OptionList.Name = "OptionList"
-                OptionList.Parent = DropdownPage
-
-                OptionLayout.Padding = UDim.new(0, 2)
-                OptionLayout.SortOrder = Enum.SortOrder.LayoutOrder
-                OptionLayout.Parent = OptionList
-
-                local function UpdateOptionListSize()
-                    local totalHeight = #dropdownConfig.Options * 32 - 2
-                    OptionList.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-                    DropdownFrame.Size = UDim2.new(0, 160, 0, math.min(totalHeight, 150))
-                end
-
-                for i, option in ipairs(dropdownConfig.Options) do
+                for i, option in ipairs(dropdown.Options) do
                     local OptionButton = Instance.new("TextButton")
-                    local OptionLabel = Instance.new("TextLabel")
-
-                    OptionButton.Font = Enum.Font.SourceSans
-                    OptionButton.Text = ""
-                    OptionButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-                    OptionButton.TextSize = 14
+                    OptionButton.Font = Enum.Font.GothamBold
+                    OptionButton.Text = option
+                    OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    OptionButton.TextSize = 13
                     OptionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                    OptionButton.BackgroundTransparency = 0.95
+                    OptionButton.BackgroundTransparency = 0.999
                     OptionButton.BorderSizePixel = 0
                     OptionButton.Size = UDim2.new(1, 0, 0, 30)
                     OptionButton.Name = "OptionButton"
-                    OptionButton.Parent = OptionList
-
-                    OptionLabel.Font = Enum.Font.GothamBold
-                    OptionLabel.Text = option
-                    OptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-                    OptionLabel.TextSize = 13
-                    OptionLabel.TextXAlignment = Enum.TextXAlignment.Center
-                    OptionLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                    OptionLabel.BackgroundTransparency = 1
-                    OptionLabel.BorderSizePixel = 0
-                    OptionLabel.Size = UDim2.new(1, 0, 1, 0)
-                    OptionLabel.Name = "OptionLabel"
-                    OptionLabel.Parent = OptionButton
+                    OptionButton.Parent = DropdownPage
 
                     OptionButton.MouseButton1Click:Connect(function()
-                        SelectedLabel.Text = option
-                        dropdownConfig.Callback(option)
-                        TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 0.999 }):Play()
-                        TweenService:Create(DropdownFrame, TweenInfo.new(0.2), { Position = UDim2.new(1, 172, 0.5, 0) }):Play()
-                        task.wait(0.2)
+                        DropdownButton.Text = option
+                        dropdown.Callback(option)
                         DropdownOverlay.Visible = false
+                        TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(DropdownContent, TweenInfo.new(0.2), { Position = UDim2.new(1, 8, 0.5, 0) }):Play()
                     end)
+                end
+
+                local function UpdateOptionListSize()
+                    local totalHeight = #dropdown.Options * 30
+                    local maxHeight = math.min(totalHeight, 150)
+                    TweenService:Create(DropdownContent, TweenInfo.new(0.2), { Size = UDim2.new(0, 150, 0, maxHeight) }):Play()
                 end
 
                 DropdownButton.MouseButton1Click:Connect(function()
@@ -1503,23 +1480,25 @@ function PixelLib:CreateGui(config)
                         DropdownOverlay.Visible = true
                         DropdownLayout:JumpToIndex(dropdownIndex)
                         TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 0.7 }):Play()
-                        TweenService:Create(DropdownFrame, TweenInfo.new(0.2), { Position = UDim2.new(1, -8, 0.5, 0) }):Play()
+                        TweenService:Create(DropdownContent, TweenInfo.new(0.2), { Position = UDim2.new(1, -8, 0.5, 0) }):Play()
                         UpdateOptionListSize()
                     end
                 end)
 
+                DropdownOverlay.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        DropdownOverlay.Visible = false
+                        TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(DropdownContent, TweenInfo.new(0.2), { Position = UDim2.new(1, 8, 0.5, 0) }):Play()
+                    end
+                end)
+
                 dropdownIndex = dropdownIndex + 1
-                UpdateSectionSize()
-                return DropdownButton
             end
 
-            sectionIndex = sectionIndex + 1
-            UpdateSectionSize()
-            return ElementControls
+            tabIndex = tabIndex + 1
+            return SectionControls
         end
-
-        tabIndex = tabIndex + 1
-        return SectionControls
     end
 
     return TabControls, GuiControls
