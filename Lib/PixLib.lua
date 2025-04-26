@@ -817,10 +817,11 @@ function PixelLib:CreateGui(config)
         local tab = tabConfig or {}
         tab.Name = tab.Name or "Tab"
         tab.Icon = tab.Icon or ""
-
+        dropdownIndex = 0 -- Reset dropdownIndex for this tab to isolate dropdowns
+    
         local TabContent = Instance.new("ScrollingFrame")
         local ContentLayout = Instance.new("UIListLayout")
-
+    
         TabContent.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
         TabContent.ScrollBarThickness = 0
         TabContent.Active = true
@@ -831,11 +832,11 @@ function PixelLib:CreateGui(config)
         TabContent.Size = UDim2.new(1, 0, 1, 0)
         TabContent.Name = "TabContent"
         TabContent.Parent = TabPages
-
+    
         ContentLayout.Padding = UDim.new(0, 3)
         ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
         ContentLayout.Parent = TabContent
-
+    
         local TabButtonFrame = Instance.new("Frame")
         local TabButtonCorner = Instance.new("UICorner")
         local TabButton = Instance.new("TextButton")
@@ -843,7 +844,7 @@ function PixelLib:CreateGui(config)
         local TabIcon = Instance.new("ImageLabel")
         local TabIndicatorStroke = Instance.new("UIStroke")
         local TabIndicatorCorner = Instance.new("UICorner")
-
+    
         TabButtonFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         TabButtonFrame.BackgroundTransparency = tabIndex == 0 and 0.92 or 0.999
         TabButtonFrame.BorderSizePixel = 0
@@ -851,10 +852,10 @@ function PixelLib:CreateGui(config)
         TabButtonFrame.Size = UDim2.new(1, 0, 0, 30)
         TabButtonFrame.Name = "TabButtonFrame"
         TabButtonFrame.Parent = TabList
-
+    
         TabButtonCorner.CornerRadius = UDim.new(0, 4)
         TabButtonCorner.Parent = TabButtonFrame
-
+    
         TabButton.Font = Enum.Font.GothamBold
         TabButton.Text = ""
         TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -866,7 +867,7 @@ function PixelLib:CreateGui(config)
         TabButton.Size = UDim2.new(1, 0, 1, 0)
         TabButton.Name = "TabButton"
         TabButton.Parent = TabButtonFrame
-
+    
         TabLabel.Font = Enum.Font.GothamBold
         TabLabel.Text = tab.Name
         TabLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -879,7 +880,7 @@ function PixelLib:CreateGui(config)
         TabLabel.Position = UDim2.new(0, 30, 0, 0)
         TabLabel.Name = "TabLabel"
         TabLabel.Parent = TabButtonFrame
-
+    
         TabIcon.Image = tab.Icon
         TabIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         TabIcon.BackgroundTransparency = 0.999
@@ -888,7 +889,7 @@ function PixelLib:CreateGui(config)
         TabIcon.Size = UDim2.new(0, 16, 0, 16)
         TabIcon.Name = "TabIcon"
         TabIcon.Parent = TabButtonFrame
-
+    
         if tabIndex == 0 then
             PageLayout:JumpToIndex(0)
             TabTitle.Text = tab.Name
@@ -899,14 +900,14 @@ function PixelLib:CreateGui(config)
             TabIndicator.Size = UDim2.new(0, 1, 0, 12)
             TabIndicator.Name = "TabIndicator"
             TabIndicator.Parent = TabButtonFrame
-
+    
             TabIndicatorStroke.Color = guiConfig.Color
             TabIndicatorStroke.Thickness = 1.6
             TabIndicatorStroke.Parent = TabIndicator
-
+    
             TabIndicatorCorner.Parent = TabIndicator
         end
-
+    
         TabButton.Activated:Connect(function()
             CreateCircleEffect(TabButton, LocalPlayer:GetMouse().X, LocalPlayer:GetMouse().Y)
             local currentIndicator
@@ -954,7 +955,7 @@ function PixelLib:CreateGui(config)
                 ):Play()
             end
         end)
-
+    
         local SectionControls = {}
         local sectionIndex = 0
 
