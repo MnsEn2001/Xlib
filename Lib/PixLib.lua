@@ -1365,7 +1365,6 @@ function PixelLib:CreateGui(config)
                 dropdownConfig.Options = dropdownConfig.Options or {}
                 dropdownConfig.Default = dropdownConfig.Default or ""
                 dropdownConfig.Callback = dropdownConfig.Callback or function() end
-                dropdownConfig.Key = dropdownConfig.Key or "Dropdown_" .. tostring(dropdownIndex)
 
                 local DropdownMainFrame = Instance.new("Frame")
                 local DropdownCorner = Instance.new("UICorner")
@@ -1378,7 +1377,7 @@ function PixelLib:CreateGui(config)
                 DropdownMainFrame.BackgroundTransparency = 0.95
                 DropdownMainFrame.BorderSizePixel = 0
                 DropdownMainFrame.Size = UDim2.new(1, 0, 0, 30)
-                DropdownMainFrame.Name = "DropdownMainFrame_" .. dropdownConfig.Key
+                DropdownMainFrame.Name = "DropdownMainFrame"
                 DropdownMainFrame.Parent = SectionContent
 
                 DropdownCorner.CornerRadius = UDim.new(0, 4)
@@ -1439,7 +1438,7 @@ function PixelLib:CreateGui(config)
                 DropdownPage.BorderSizePixel = 0
                 DropdownPage.LayoutOrder = dropdownIndex
                 DropdownPage.Size = UDim2.new(1, 0, 1, 0)
-                DropdownPage.Name = "DropdownPage_" .. dropdownConfig.Key
+                DropdownPage.Name = "DropdownPage"
                 DropdownPage.Parent = DropdownPages
 
                 OptionList.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -1524,3 +1523,5 @@ function PixelLib:CreateGui(config)
 
     return TabControls, GuiControls
 end
+
+return PixelLib
