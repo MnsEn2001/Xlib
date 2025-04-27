@@ -1365,24 +1365,25 @@ function PixelLib:CreateGui(config)
                 dropdownConfig.Options = dropdownConfig.Options or {}
                 dropdownConfig.Default = dropdownConfig.Default or ""
                 dropdownConfig.Callback = dropdownConfig.Callback or function() end
-
+            
+                -- สร้าง UI elements สำหรับ Dropdown หลัก
                 local DropdownMainFrame = Instance.new("Frame")
                 local DropdownCorner = Instance.new("UICorner")
                 local DropdownButton = Instance.new("TextButton")
                 local DropdownLabel = Instance.new("TextLabel")
                 local SelectedLabel = Instance.new("TextLabel")
                 local ArrowIcon = Instance.new("ImageLabel")
-
+            
                 DropdownMainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 DropdownMainFrame.BackgroundTransparency = 0.95
                 DropdownMainFrame.BorderSizePixel = 0
                 DropdownMainFrame.Size = UDim2.new(1, 0, 0, 30)
                 DropdownMainFrame.Name = "DropdownMainFrame"
                 DropdownMainFrame.Parent = SectionContent
-
+            
                 DropdownCorner.CornerRadius = UDim.new(0, 4)
                 DropdownCorner.Parent = DropdownMainFrame
-
+            
                 DropdownButton.Font = Enum.Font.SourceSans
                 DropdownButton.Text = ""
                 DropdownButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -1393,7 +1394,7 @@ function PixelLib:CreateGui(config)
                 DropdownButton.Size = UDim2.new(1, 0, 1, 0)
                 DropdownButton.Name = "DropdownButton"
                 DropdownButton.Parent = DropdownMainFrame
-
+            
                 DropdownLabel.Font = Enum.Font.GothamBold
                 DropdownLabel.Text = dropdownConfig.Name
                 DropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -1406,7 +1407,7 @@ function PixelLib:CreateGui(config)
                 DropdownLabel.Size = UDim2.new(0.5, 0, 1, 0)
                 DropdownLabel.Name = "DropdownLabel"
                 DropdownLabel.Parent = DropdownMainFrame
-
+            
                 SelectedLabel.Font = Enum.Font.GothamBold
                 SelectedLabel.Text = dropdownConfig.Default
                 SelectedLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
@@ -1419,7 +1420,7 @@ function PixelLib:CreateGui(config)
                 SelectedLabel.Size = UDim2.new(1, -40, 1, 0)
                 SelectedLabel.Name = "SelectedLabel"
                 SelectedLabel.Parent = DropdownMainFrame
-
+            
                 ArrowIcon.Image = "rbxassetid://16851841101"
                 ArrowIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 ArrowIcon.BackgroundTransparency = 1
@@ -1429,18 +1430,93 @@ function PixelLib:CreateGui(config)
                 ArrowIcon.Rotation = -90
                 ArrowIcon.Name = "ArrowIcon"
                 ArrowIcon.Parent = DropdownMainFrame
-
-                local DropdownPage = Instance.new("Frame")
+            
+                -- สร้าง DropdownOverlay เฉพาะสำหรับ Dropdown นี้
+                local DropdownOverlay = Instance.new("Frame")
+                local OverlayShadowHolder = Instance.new("Frame")
+                local OverlayShadow = Instance.new("ImageLabel")
+                local OverlayCorner = Instance.new("UICorner")
+                local OverlayButton = Instance.new("TextButton")
+            
+                DropdownOverlay.AnchorPoint = Vector2.new(1, 1)
+                DropdownOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                DropdownOverlay.BackgroundTransparency = 0.999
+                DropdownOverlay.BorderSizePixel = 0
+                DropdownOverlay.ClipsDescendants = true
+                DropdownOverlay.Position = UDim2.new(1, 8, 1, 8)
+                DropdownOverlay.Size = UDim2.new(1, 154, 1, 54)
+                DropdownOverlay.Visible = false
+                DropdownOverlay.Name = "DropdownOverlay_" .. dropdownConfig.Name
+                DropdownOverlay.Parent = ContentContainer
+            
+                OverlayShadowHolder.BackgroundTransparency = 1
+                OverlayShadowHolder.BorderSizePixel = 0
+                OverlayShadowHolder.Size = UDim2.new(1, 0, 1, 0)
+                OverlayShadowHolder.ZIndex = 0
+                OverlayShadowHolder.Name = "OverlayShadowHolder"
+                OverlayShadowHolder.Parent = DropdownOverlay
+            
+                OverlayShadow.Image = "rbxassetid://6015897843"
+                OverlayShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+                OverlayShadow.ImageTransparency = 0.5
+                OverlayShadow.ScaleType = Enum.ScaleType.Slice
+                OverlayShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+                OverlayShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+                OverlayShadow.BackgroundTransparency = 1
+                OverlayShadow.BorderSizePixel = 0
+                OverlayShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+                OverlayShadow.Size = UDim2.new(1, 35, 1, 35)
+                OverlayShadow.ZIndex = 0
+                OverlayShadow.Name = "OverlayShadow"
+                OverlayShadow.Parent = OverlayShadowHolder
+            
+                OverlayCorner.Parent = DropdownOverlay
+            
+                OverlayButton.Font = Enum.Font.SourceSans
+                OverlayButton.Text = ""
+                OverlayButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+                OverlayButton.TextSize = 14
+                OverlayButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                OverlayButton.BackgroundTransparency = 0.999
+                OverlayButton.BorderSizePixel = 0
+                OverlayButton.Size = UDim2.new(1, 0, 1, 0)
+                OverlayButton.Name = "OverlayButton"
+                OverlayButton.Parent = DropdownOverlay
+            
+                -- สร้าง DropdownFrame เฉพาะสำหรับ Dropdown นี้
+                local DropdownFrame = Instance.new("Frame")
+                local DropdownCorner = Instance.new("UICorner")
+                local DropdownStroke = Instance.new("UIStroke")
+                local DropdownContent = Instance.new("Frame")
                 local OptionList = Instance.new("ScrollingFrame")
                 local OptionLayout = Instance.new("UIListLayout")
-
-                DropdownPage.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                DropdownPage.BorderSizePixel = 0
-                DropdownPage.LayoutOrder = dropdownIndex
-                DropdownPage.Size = UDim2.new(1, 0, 1, 0)
-                DropdownPage.Name = "DropdownPage"
-                DropdownPage.Parent = DropdownPages
-
+            
+                DropdownFrame.AnchorPoint = Vector2.new(1, 0.5)
+                DropdownFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                DropdownFrame.BorderSizePixel = 0
+                DropdownFrame.Position = UDim2.new(1, 172, 0.5, 0)
+                DropdownFrame.Size = UDim2.new(0, 160, 0, 150)
+                DropdownFrame.Name = "DropdownFrame_" .. dropdownConfig.Name
+                DropdownFrame.ClipsDescendants = true
+                DropdownFrame.Parent = DropdownOverlay
+            
+                DropdownCorner.CornerRadius = UDim.new(0, 3)
+                DropdownCorner.Parent = DropdownFrame
+            
+                DropdownStroke.Color = Color3.fromRGB(255, 255, 255)
+                DropdownStroke.Thickness = 2.5
+                DropdownStroke.Transparency = 0.8
+                DropdownStroke.Parent = DropdownFrame
+            
+                DropdownContent.AnchorPoint = Vector2.new(0.5, 0.5)
+                DropdownContent.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                DropdownContent.BackgroundTransparency = 0.999
+                DropdownContent.BorderSizePixel = 0
+                DropdownContent.Position = UDim2.new(0.5, 0, 0.5, 0)
+                DropdownContent.Size = UDim2.new(1, -10, 1, -10)
+                DropdownContent.Name = "DropdownContent"
+                DropdownContent.Parent = DropdownFrame
+            
                 OptionList.CanvasSize = UDim2.new(0, 0, 0, 0)
                 OptionList.ScrollBarThickness = 0
                 OptionList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1448,22 +1524,24 @@ function PixelLib:CreateGui(config)
                 OptionList.BorderSizePixel = 0
                 OptionList.Size = UDim2.new(1, 0, 1, 0)
                 OptionList.Name = "OptionList"
-                OptionList.Parent = DropdownPage
-
+                OptionList.Parent = DropdownContent
+            
                 OptionLayout.Padding = UDim.new(0, 2)
                 OptionLayout.SortOrder = Enum.SortOrder.LayoutOrder
                 OptionLayout.Parent = OptionList
-
+            
+                -- อัพเดทขนาดของ OptionList
                 local function UpdateOptionListSize()
                     local totalHeight = #dropdownConfig.Options * 32 - 2
                     OptionList.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
                     DropdownFrame.Size = UDim2.new(0, 160, 0, math.min(totalHeight, 150))
                 end
-
-                for i, option in ipairs(dropdownConfig.Options) do
+            
+                -- สร้างตัวเลือกใน Dropdown
+                for _, option in ipairs(dropdownConfig.Options) do
                     local OptionButton = Instance.new("TextButton")
                     local OptionLabel = Instance.new("TextLabel")
-
+            
                     OptionButton.Font = Enum.Font.SourceSans
                     OptionButton.Text = ""
                     OptionButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -1474,7 +1552,7 @@ function PixelLib:CreateGui(config)
                     OptionButton.Size = UDim2.new(1, 0, 0, 30)
                     OptionButton.Name = "OptionButton"
                     OptionButton.Parent = OptionList
-
+            
                     OptionLabel.Font = Enum.Font.GothamBold
                     OptionLabel.Text = option
                     OptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -1486,7 +1564,7 @@ function PixelLib:CreateGui(config)
                     OptionLabel.Size = UDim2.new(1, 0, 1, 0)
                     OptionLabel.Name = "OptionLabel"
                     OptionLabel.Parent = OptionButton
-
+            
                     OptionButton.MouseButton1Click:Connect(function()
                         SelectedLabel.Text = option
                         dropdownConfig.Callback(option)
@@ -1496,22 +1574,31 @@ function PixelLib:CreateGui(config)
                         DropdownOverlay.Visible = false
                     end)
                 end
-
+            
+                -- การจัดการการคลิก DropdownButton
                 DropdownButton.MouseButton1Click:Connect(function()
                     if not DropdownOverlay.Visible then
                         DropdownOverlay.Visible = true
-                        DropdownLayout:JumpToIndex(dropdownIndex)
                         TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 0.7 }):Play()
                         TweenService:Create(DropdownFrame, TweenInfo.new(0.2), { Position = UDim2.new(1, -8, 0.5, 0) }):Play()
                         UpdateOptionListSize()
                     end
                 end)
-
-                dropdownIndex = dropdownIndex + 1
+            
+                -- การจัดการการคลิก OverlayButton เพื่อปิด Dropdown
+                OverlayButton.Activated:Connect(function()
+                    if DropdownOverlay.Visible then
+                        TweenService:Create(DropdownOverlay, TweenInfo.new(0.2), { BackgroundTransparency = 0.999 }):Play()
+                        TweenService:Create(DropdownFrame, TweenInfo.new(0.2), { Position = UDim2.new(1, 172, 0.5, 0) }):Play()
+                        task.wait(0.2)
+                        DropdownOverlay.Visible = false
+                    end
+                end)
+            
                 UpdateSectionSize()
                 return DropdownButton
             end
-
+            
             sectionIndex = sectionIndex + 1
             UpdateSectionSize()
             return ElementControls
