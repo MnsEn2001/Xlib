@@ -817,9 +817,29 @@ function PixelLib:CreateGui(config)
         local tab = tabConfig or {}
         tab.Name = tab.Name or "Tab"
         tab.Icon = tab.Icon or ""
-
+    
         local TabContent = Instance.new("ScrollingFrame")
         local ContentLayout = Instance.new("UIListLayout")
+    
+        TabContent.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+        TabContent.ScrollBarThickness = 4 -- เพิ่ม ScrollBar เพื่อให้มองเห็นการเลื่อน
+        TabContent.Active = true
+        TabContent.LayoutOrder = tabIndex
+        TabContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        TabContent.BackgroundTransparency = 0.999
+        TabContent.BorderSizePixel = 0
+        TabContent.Size = UDim2.new(1, 0, 1, 0)
+        TabContent.Name = "TabContent"
+        TabContent.Parent = TabPages
+    
+        ContentLayout.Padding = UDim.new(0, 3)
+        ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ContentLayout.Parent = TabContent
+    
+        -- อัปเดต CanvasSize เมื่อมีการเปลี่ยนแปลงเนื้อหา
+        ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            TabContent.CanvasSize = UDim2.new(0, 0, 0, ContentLayout.AbsoluteContentSize.Y)
+        end)
 
         TabContent.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
         TabContent.ScrollBarThickness = 0
@@ -961,12 +981,12 @@ function PixelLib:CreateGui(config)
         function SectionControls:AddSection(title, collapsible)
             local sectionTitle = title or "Section"
             local isCollapsible = collapsible or false
-
+        
             local SectionFrame = Instance.new("Frame")
             local SectionDivider = Instance.new("Frame")
             local DividerCorner = Instance.new("UICorner")
             local DividerGradient = Instance.new("UIGradient")
-
+        
             SectionFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SectionFrame.BackgroundTransparency = 0.999
             SectionFrame.BorderSizePixel = 0
@@ -975,14 +995,15 @@ function PixelLib:CreateGui(config)
             SectionFrame.Size = UDim2.new(1, 0, 0, 30)
             SectionFrame.Name = "SectionFrame"
             SectionFrame.Parent = TabContent
-
+        
+            -- ส่วนหัวของ Section
             local SectionHeader = Instance.new("Frame")
             local HeaderCorner = Instance.new("UICorner")
             local HeaderButton = Instance.new("TextButton")
             local CollapseIconFrame = Instance.new("Frame")
             local CollapseIcon = Instance.new("ImageLabel")
             local SectionTitleLabel = Instance.new("TextLabel")
-
+        
             SectionHeader.AnchorPoint = Vector2.new(0.5, 0)
             SectionHeader.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SectionHeader.BackgroundTransparency = 0.935
@@ -991,10 +1012,10 @@ function PixelLib:CreateGui(config)
             SectionHeader.Size = UDim2.new(1, 1, 0, 30)
             SectionHeader.Name = "SectionHeader"
             SectionHeader.Parent = SectionFrame
-
+        
             HeaderCorner.CornerRadius = UDim.new(0, 4)
             HeaderCorner.Parent = SectionHeader
-
+        
             HeaderButton.Font = Enum.Font.SourceSans
             HeaderButton.Text = ""
             HeaderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -1005,7 +1026,7 @@ function PixelLib:CreateGui(config)
             HeaderButton.Size = UDim2.new(1, 0, 1, 0)
             HeaderButton.Name = "HeaderButton"
             HeaderButton.Parent = SectionHeader
-
+        
             CollapseIconFrame.AnchorPoint = Vector2.new(1, 0.5)
             CollapseIconFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
             CollapseIconFrame.BackgroundTransparency = 0.999
@@ -1014,7 +1035,7 @@ function PixelLib:CreateGui(config)
             CollapseIconFrame.Size = UDim2.new(0, 20, 0, 20)
             CollapseIconFrame.Name = "CollapseIconFrame"
             CollapseIconFrame.Parent = SectionHeader
-
+        
             CollapseIcon.Image = "rbxassetid://16851841101"
             CollapseIcon.AnchorPoint = Vector2.new(0.5, 0.5)
             CollapseIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1025,7 +1046,7 @@ function PixelLib:CreateGui(config)
             CollapseIcon.Size = UDim2.new(1, 6, 1, 6)
             CollapseIcon.Name = "CollapseIcon"
             CollapseIcon.Parent = CollapseIconFrame
-
+        
             SectionTitleLabel.Font = Enum.Font.GothamBold
             SectionTitleLabel.Text = sectionTitle
             SectionTitleLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
@@ -1040,7 +1061,7 @@ function PixelLib:CreateGui(config)
             SectionTitleLabel.Size = UDim2.new(1, -50, 0, 13)
             SectionTitleLabel.Name = "SectionTitleLabel"
             SectionTitleLabel.Parent = SectionHeader
-
+        
             SectionDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SectionDivider.BorderSizePixel = 0
             SectionDivider.AnchorPoint = Vector2.new(0.5, 0)
@@ -1048,21 +1069,21 @@ function PixelLib:CreateGui(config)
             SectionDivider.Size = UDim2.new(0, 0, 0, 2)
             SectionDivider.Name = "SectionDivider"
             SectionDivider.Parent = SectionFrame
-
+        
             DividerCorner.CornerRadius = UDim.new(0, 100)
             DividerCorner.Parent = SectionDivider
-
+        
             DividerGradient.Color = ColorSequence.new({
                 ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
                 ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
             })
             DividerGradient.Parent = SectionDivider
-
+        
             local SectionContent = Instance.new("Frame")
             local ContentPadding = Instance.new("UIPadding")
             local ContentList = Instance.new("UIListLayout")
-
+        
             SectionContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SectionContent.BackgroundTransparency = 1
             SectionContent.BorderSizePixel = 0
@@ -1070,35 +1091,44 @@ function PixelLib:CreateGui(config)
             SectionContent.Size = UDim2.new(1, 0, 0, 0)
             SectionContent.Name = "SectionContent"
             SectionContent.Parent = SectionFrame
-
+        
             ContentPadding.PaddingLeft = UDim.new(0, 10)
             ContentPadding.PaddingRight = UDim.new(0, 10)
             ContentPadding.PaddingTop = UDim.new(0, 5)
             ContentPadding.Parent = SectionContent
-
+        
             ContentList.Padding = UDim.new(0, 5)
             ContentList.SortOrder = Enum.SortOrder.LayoutOrder
             ContentList.Parent = SectionContent
-
+        
             local isCollapsed = false
             local defaultHeight = 0
-
+        
             local function UpdateSectionSize()
                 local contentHeight = 0
-                for _, child in SectionContent:GetChildren() do
+                for _, child in ipairs(SectionContent:GetChildren()) do
                     if child:IsA("GuiObject") and child ~= ContentList and child ~= ContentPadding then
-                        contentHeight = contentHeight + child.Size.Y.Offset + 5
+                        contentHeight = contentHeight + child.Size.Y.Offset + ContentList.Padding.Offset
                     end
                 end
-                defaultHeight = contentHeight + 35
+                defaultHeight = contentHeight + 35 -- รวมความสูงของ header และ divider
                 SectionFrame.Size = UDim2.new(1, 0, 0, isCollapsed and 30 or defaultHeight)
                 SectionContent.Visible = not isCollapsed
-                TabContent.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 35)
+        
+                -- อัปเดต CanvasSize ของ TabContent
+                local totalCanvasHeight = 0
+                for _, section in ipairs(TabContent:GetChildren()) do
+                    if section:IsA("Frame") and section.Name == "SectionFrame" then
+                        totalCanvasHeight = totalCanvasHeight + section.Size.Y.Offset + ContentList.Padding.Offset
+                    end
+                end
+                TabContent.CanvasSize = UDim2.new(0, 0, 0, totalCanvasHeight)
             end
-
+        
+            -- อัปเดตขนาดเมื่อมีการเพิ่มหรือลบ element
             SectionContent.ChildAdded:Connect(UpdateSectionSize)
             SectionContent.ChildRemoved:Connect(UpdateSectionSize)
-
+        
             if isCollapsible then
                 HeaderButton.MouseButton1Click:Connect(function()
                     isCollapsed = not isCollapsed
@@ -1112,7 +1142,7 @@ function PixelLib:CreateGui(config)
             else
                 CollapseIconFrame.Visible = false
             end
-
+        
             local ElementControls = {}
 
             function ElementControls:AddButton(config)
