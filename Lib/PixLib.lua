@@ -1040,9 +1040,9 @@ function PixelLib:CreateGui(config)
                 DropdownFrame.ClipsDescendants = true
                 DropdownFrame.Parent = DropdownOverlay
 
-                local DropdownCorner = Instance.new("UICorner")
-                DropdownCorner.CornerRadius = UDim.new(0, 3)
-                DropdownCorner.Parent = DropdownFrame
+                local DropdownCorner2 = Instance.new("UICorner")
+                DropdownCorner2.CornerRadius = UDim.new(0, 3)
+                DropdownCorner2.Parent = DropdownFrame
 
                 local DropdownStroke = Instance.new("UIStroke")
                 DropdownStroke.Color = Color3.fromRGB(255, 255, 255)
@@ -1074,32 +1074,45 @@ function PixelLib:CreateGui(config)
                     DropdownFrame.Size = UDim2.new(0, 160, 0, math.min(totalHeight, 150))
                 end
 
-                for _, option in ipairs(dropdownConfig.Options) do
-                    local OptionButton = Instance.new("TextButton")
-                    OptionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                    OptionButton.BackgroundTransparency = 0.95
-                    OptionButton.Size = UDim2.new(1, 0, 0, 30)
-                    OptionButton.Parent = OptionList
+                local function CreateOptions()
+                    -- Clear existing options
+                    for _, child in pairs(OptionList:GetChildren()) do
+                        if child:IsA("TextButton") then
+                            child:Destroy()
+                        end
+                    end
+                    
+                    -- Create new options
+                    for _, option in ipairs(dropdownConfig.Options) do
+                        local OptionButton = Instance.new("TextButton")
+                        OptionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                        OptionButton.BackgroundTransparency = 0.95
+                        OptionButton.Size = UDim2.new(1, 0, 0, 30)
+                        OptionButton.Parent = OptionList
 
-                    local OptionLabel = Instance.new("TextLabel")
-                    OptionLabel.Font = Enum.Font.GothamBold
-                    OptionLabel.Text = option
-                    OptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-                    OptionLabel.TextSize = 13
-                    OptionLabel.TextXAlignment = Enum.TextXAlignment.Center
-                    OptionLabel.BackgroundTransparency = 1
-                    OptionLabel.Size = UDim2.new(1, 0, 1, 0)
-                    OptionLabel.Parent = OptionButton
+                        local OptionLabel = Instance.new("TextLabel")
+                        OptionLabel.Font = Enum.Font.GothamBold
+                        OptionLabel.Text = option
+                        OptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                        OptionLabel.TextSize = 13
+                        OptionLabel.TextXAlignment = Enum.TextXAlignment.Center
+                        OptionLabel.BackgroundTransparency = 1
+                        OptionLabel.Size = UDim2.new(1, 0, 1, 0)
+                        OptionLabel.Parent = OptionButton
 
-                    OptionButton.MouseButton1Click:Connect(function()
-                        SelectedLabel.Text = option
-                        dropdownConfig.Callback(option)
-                        TweenService:Create(DropdownOverlay, TWEEN_INFO, { BackgroundTransparency = 0.999 }):Play()
-                        TweenService:Create(DropdownFrame, TWEEN_INFO, { Position = UDim2.new(1, 172, 0.5, 0) }):Play()
-                        task.wait(0.2)
-                        DropdownOverlay.Visible = false
-                    end)
+                        OptionButton.MouseButton1Click:Connect(function()
+                            SelectedLabel.Text = option
+                            dropdownConfig.Callback(option)
+                            TweenService:Create(DropdownOverlay, TWEEN_INFO, { BackgroundTransparency = 0.999 }):Play()
+                            TweenService:Create(DropdownFrame, TWEEN_INFO, { Position = UDim2.new(1, 172, 0.5, 0) }):Play()
+                            task.wait(0.2)
+                            DropdownOverlay.Visible = false
+                        end)
+                    end
+                    UpdateOptionListSize()
                 end
+
+                CreateOptions()  -- Initial creation
 
                 DropdownButton.MouseButton1Click:Connect(function()
                     if not DropdownOverlay.Visible then
@@ -1119,8 +1132,33 @@ function PixelLib:CreateGui(config)
                     end
                 end)
 
+                -- Return a dropdown object with methods
+                local dropdownObject = {
+                    Button = DropdownButton,
+                    SelectedLabel = SelectedLabel,
+                    Overlay = DropdownOverlay,
+                    Frame = DropdownFrame,
+                    Options = dropdownConfig.Options,  -- Reference to options
+                    Callback = dropdownConfig.Callback,
+                    Refresh = function(self, newOptions)
+                        if type(newOptions) == "table" then
+                            dropdownConfig.Options = newOptions
+                            self.Options = newOptions
+                            CreateOptions()
+                            -- Optionally set to first option
+                            if newOptions[1] then
+                                self:SetValue(newOptions[1])
+                            end
+                        end
+                    end,
+                    SetValue = function(self, value)
+                        SelectedLabel.Text = tostring(value)
+                        dropdownConfig.Callback(value)
+                    end
+                }
+
                 UpdateSectionSize()
-                return DropdownButton
+                return dropdownObject
             end
 
             sectionIndex = sectionIndex + 1
